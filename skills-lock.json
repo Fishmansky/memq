@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "10x-cli-guide": {
+      "source": "przeprogramowani/10x-cli",
+      "sourceType": "github",
+      "skillPath": "skills/10x-cli-guide/SKILL.md",
+      "computedHash": "3238013c16ec98c0af694856d4c0e60ebdd97bb7c243af0e7f49cbc8c2abbc99"
+    },
+    "10x-cli-setup": {
+      "source": "przeprogramowani/10x-cli",
+      "sourceType": "github",
+      "skillPath": "skills/10x-cli-setup/SKILL.md",
+      "computedHash": "4249d2c3bfd9031c4a08e73962a95c2e73ddc53d0a3c3799db9a7be26477e083"
+    }
+  }
+}
