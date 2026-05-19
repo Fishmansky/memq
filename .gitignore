@@ -28,7 +28,7 @@ pnpm-debug.log*
 .idea/
 
 # AI
-.CLAUDE.md
-.CLAUDE.md.scaffold
+CLAUDE.md
+CLAUDE.md.scaffold
 .claude/
 .agents/
