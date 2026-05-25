@@ -120,12 +120,12 @@ Set secrets in the Workers namespace (NOT Pages namespace — wrangler.jsonc tar
 
 ## Phase 5 — Production Smoke Tests
 
-- [ ] **5.1** Open deployed URL — homepage must load (HTTP 200)
-- [ ] **5.2** Navigate to `/dashboard` unauthenticated — must redirect to `/auth/signin`
-- [ ] **5.3** Sign up with a real email address
-- [ ] **5.4** Sign in → access `/dashboard` — must render without redirect loop
-- [ ] **5.5** Sign out → verify session cleared (re-visit `/dashboard` → redirected)
-- [ ] **5.6** Tail production logs during smoke test:
+- [x] **5.1** Open deployed URL — homepage must load (HTTP 200)
+- [x] **5.2** Navigate to `/dashboard` unauthenticated — must redirect to `/auth/signin`
+- [x] **5.3** Sign up with a real email address
+- [x] **5.4** Sign in → access `/dashboard` — must render without redirect loop
+- [x] **5.5** Sign out → verify session cleared (re-visit `/dashboard` → redirected)
+- [x] **5.6** Tail production logs during smoke test:
   ```bash
   npx wrangler tail
   # watch for errors, especially auth-related or CPU limit errors
@@ -143,12 +143,12 @@ Set secrets in the Workers namespace (NOT Pages namespace — wrangler.jsonc tar
 
 Add a deploy step that runs on push to `master` only (not on PRs — PRs should only lint/build).
 
-- [ ] **6.1** Create Cloudflare API token with limited scope:
+- [x] **6.1** Create Cloudflare API token with limited scope:
   - Cloudflare dashboard → My Profile → API Tokens → Create Token
   - Template: "Edit Cloudflare Workers"
   - Scope: Account = `<your account>`, Zone Resources = none needed for Workers
   - Copy the token value (shown once)
-- [ ] **6.2** Add GitHub repository secrets:
+- [x] **6.2** Add GitHub repository secrets:
   - `CLOUDFLARE_API_TOKEN` = token from 6.1
   - `CLOUDFLARE_ACCOUNT_ID` = found in Cloudflare dashboard URL or `wrangler whoami`
   - `SUPABASE_URL` and `SUPABASE_KEY` already present for build step
@@ -165,8 +165,8 @@ Add a deploy step that runs on push to `master` only (not on PRs — PRs should 
 
 Insert this step AFTER the `npm run build` step (deploy requires the built `dist/` directory).
 
-- [ ] **6.4** Push to master → verify GitHub Actions run shows deploy step green
-- [ ] **6.5** Confirm deployment in Cloudflare dashboard → Workers & Pages → `memq`
+- [x] **6.4** Push to master → verify GitHub Actions run shows deploy step green
+- [x] **6.5** Confirm deployment in Cloudflare dashboard → Workers & Pages → `memq`
 
 **Edge case — API token scoped too narrowly**: "Edit Cloudflare Workers" template grants Worker deploy rights but NOT Workers Secrets write rights. For CI to set secrets programmatically (future), a custom token with `Workers Scripts: Edit` + `Workers KV Storage: Edit` + `Workers Secrets: Edit` would be needed. For now, secrets are set manually via CLI (Phase 3) — intentional per the minimal-permissions posture.
 
@@ -176,17 +176,17 @@ Insert this step AFTER the `npm run build` step (deploy requires the built `dist
 
 ## Phase 7 — Operational Wiring
 
-- [ ] **7.1** Rollback command reference:
+- [x] **7.1** Rollback command reference:
   ```bash
   npx wrangler deployments list          # find previous deployment ID
   npx wrangler rollback <deployment-id>  # ~60 second revert
   ```
   Note: DB migrations do NOT roll back automatically — plan forward-compatible migrations only.
-- [ ] **7.2** Production log tailing:
+- [x] **7.2** Production log tailing:
   ```bash
   npx wrangler tail --format json
   ```
-- [ ] **7.3** Verify `.dev.vars` not tracked: `git status` must NOT show `.dev.vars`
+- [x] **7.3** Verify `.dev.vars` not tracked: `git status` must NOT show `.dev.vars`
 
 ---
 
