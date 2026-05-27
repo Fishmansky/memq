@@ -15,6 +15,7 @@ if (supabase) {
     .from("algorithms")
     .select("id, name, moves")
     .eq("id", algoId)
+    .eq("list_id", id)
     .single();
 
   if (!algoError) {
@@ -37,7 +38,7 @@ if (supabase) {
 }
 
 if (!algorithm) {
-  return Astro.redirect("/sets/" + (id ?? "") + "?error=" + encodeURIComponent("Algorithm not found"));
+  return Astro.redirect((id ? `/sets/${id}` : "/dashboard") + "?error=" + encodeURIComponent("Algorithm not found"));
 }
 
 if (!list) {

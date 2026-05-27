@@ -17,7 +17,9 @@ if (supabase) {
     .eq("id", id)
     .single();
 
-  if (!listError) {
+  if (listError) {
+    bannerError = listError.message;
+  } else {
     list = listData;
     const { data: algoData, error: algoError } = await supabase
       .from("algorithms")
@@ -31,7 +33,7 @@ if (supabase) {
 }
 
 if (!list) {
-  return Astro.redirect("/dashboard?error=" + encodeURIComponent("Set not found"));
+  return Astro.redirect("/dashboard?error=" + encodeURIComponent(bannerError ?? "Set not found"));
 }
 ---
 
