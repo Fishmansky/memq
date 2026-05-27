@@ -386,29 +386,29 @@ No code changes in this phase. This phase is verification-only.
 
 #### Automated
 
-- [x] 1.1 Migration file exists: `ls supabase/migrations/20260527000000_domain_schema_rls.sql`
-- [x] 1.2 Seed file exists: `ls supabase/seed.sql`
-- [x] 1.3 `npm run lint` passes
-- [x] 1.4 `npm run build` passes
+- [x] 1.1 Migration file exists: `ls supabase/migrations/20260527000000_domain_schema_rls.sql` — 90e5fc9
+- [x] 1.2 Seed file exists: `ls supabase/seed.sql` — 90e5fc9
+- [x] 1.3 `npm run lint` passes — 90e5fc9
+- [x] 1.4 `npm run build` passes — 90e5fc9
 
 #### Manual
 
-- [x] 1.5 Review migration SQL — four tables, CHECK constraint, moves index, 14 RLS policies
-- [x] 1.6 Review seed SQL — fixed UUID on system list, 8 algorithm rows, correct SQL escaping
+- [x] 1.5 Review migration SQL — four tables, CHECK constraint, moves index, 14 RLS policies — 90e5fc9
+- [x] 1.6 Review seed SQL — fixed UUID on system list, 8 algorithm rows, correct SQL escaping — 90e5fc9
 
 ### Phase 2: Apply migration + generate TypeScript types
 
 #### Automated
 
-- [ ] 2.1 `src/db/database.types.ts` exists with all four table types
-- [ ] 2.2 `npm run build` passes with typed client
-- [ ] 2.3 `npm run lint` passes
+- [x] 2.1 `src/db/database.types.ts` exists with all four table types
+- [x] 2.2 `npm run build` passes with typed client
+- [x] 2.3 `npm run lint` passes
 
 #### Manual
 
-- [ ] 2.4 Supabase Studio shows all four tables with correct columns
-- [ ] 2.5 RLS enabled on all four tables in Studio
-- [ ] 2.6 Seed data present: 1 system list, 8 algorithms
+- [x] 2.4 Supabase Studio shows all four tables with correct columns
+- [x] 2.5 RLS enabled on all four tables in Studio
+- [x] 2.6 Seed data present: 1 system list, 8 algorithms
 
 ### Phase 3: RLS smoke test
 
