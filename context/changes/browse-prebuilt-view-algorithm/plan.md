@@ -322,28 +322,28 @@ Create the `/sets/[id]/[algoId]` page that shows the algorithm's name and its fu
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint`
-- [x] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint` — 499e89f
+- [x] 3.2 Build passes: `npm run build` — 499e89f
 
 #### Manual
 
-- [x] 3.3 F2L set shows 41 algorithms in position order
-- [x] 3.4 OLL set shows 57 algorithms in position order
-- [x] 3.5 Nonexistent list id → redirect to `/dashboard?error=...`
-- [x] 3.6 Valid set URL + `?error=Test` → inline banner renders (no redirect)
-- [x] 3.7 "← Sets" back link works
+- [x] 3.3 F2L set shows 41 algorithms in position order — 499e89f
+- [x] 3.4 OLL set shows 57 algorithms in position order — 499e89f
+- [x] 3.5 Nonexistent list id → redirect to `/dashboard?error=...` — 499e89f
+- [x] 3.6 Valid set URL + `?error=Test` → inline banner renders (no redirect) — 499e89f
+- [x] 3.7 "← Sets" back link works — 499e89f
 
 ### Phase 4: Algorithm Detail Page
 
 #### Automated
 
-- [ ] 4.1 Lint passes: `npm run lint`
-- [ ] 4.2 Build passes: `npm run build`
+- [x] 4.1 Lint passes: `npm run lint`
+- [x] 4.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 4.3 Algorithm name renders as page heading
-- [ ] 4.4 F2L Basic 1 shows 3 chips: `R`, `U`, `R'`
-- [ ] 4.5 OLL 1 shows 9 chips with no stray parentheses
-- [ ] 4.6 Disabled Practice button visible and greyed out
-- [ ] 4.7 Back link navigates to parent set
+- [x] 4.3 Algorithm name renders as page heading
+- [x] 4.4 F2L Basic 1 shows 3 chips: `R`, `U`, `R'`
+- [x] 4.5 OLL 1 shows 9 chips with no stray parentheses
+- [x] 4.6 Disabled Practice button visible and greyed out
+- [x] 4.7 Back link navigates to parent set

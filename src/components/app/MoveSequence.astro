@@ -1,0 +1,16 @@
+---
+interface Props {
+  moves: string;
+}
+
+const { moves } = Astro.props;
+const tokens = moves.replace(/[()]/g, "").split(" ").filter(Boolean);
+---
+
+<div class="flex flex-wrap gap-2">
+  {
+    tokens.map((token) => (
+      <span class="rounded border border-white/20 bg-white/10 px-2 py-1 font-mono text-sm text-white">{token}</span>
+    ))
+  }
+</div>
