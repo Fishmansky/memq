@@ -1,0 +1,50 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import AlgorithmRow from "@/components/app/AlgorithmRow.astro";
+import { createClient } from "@/lib/supabase";
+
+const { id } = Astro.params;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+let list: { id: string; name: string } | null = null;
+let algorithms: { id: string; name: string; position: number }[] = [];
+let bannerError: string | null = null;
+
+if (supabase) {
+  const { data: listData, error: listError } = await supabase
+    .from("algorithm_lists")
+    .select("id, name")
+    .eq("id", id)
+    .single();
+
+  if (!listError) {
+    list = listData;
+    const { data: algoData, error: algoError } = await supabase
+      .from("algorithms")
+      .select("id, name, position")
+      .eq("list_id", id)
+      .order("position", { ascending: true });
+
+    algorithms = algoData ?? [];
+    bannerError = algoError?.message ?? null;
+  }
+}
+
+if (!list) {
+  return Astro.redirect("/dashboard?error=" + encodeURIComponent("Set not found"));
+}
+---
+
+<AppLayout title={list.name} backHref="/dashboard" backLabel="Sets">
+  {
+    bannerError && (
+      <div class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+        {bannerError}
+      </div>
+    )
+  }
+  <h1 class="mb-6 text-2xl font-bold text-white">{list.name}</h1>
+  <div class="flex flex-col gap-2">
+    {algorithms.map((algo) => <AlgorithmRow id={algo.id} listId={list.id} position={algo.position} name={algo.name} />)}
+  </div>
+</AppLayout>

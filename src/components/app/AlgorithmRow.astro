@@ -1,0 +1,19 @@
+---
+interface Props {
+  id: string;
+  listId: string;
+  position: number;
+  name: string;
+}
+
+const { id, listId, position, name: algoName } = Astro.props;
+---
+
+<a
+  href={`/sets/${listId}/${id}`}
+  class="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10"
+>
+  <span class="w-8 text-right text-sm text-white/40">{position}</span>
+  <span class="flex-1 text-white">{algoName}</span>
+  <span class="text-white/40">→</span>
+</a>

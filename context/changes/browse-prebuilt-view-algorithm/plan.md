@@ -309,29 +309,29 @@ Create the `/sets/[id]/[algoId]` page that shows the algorithm's name and its fu
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — 613256a
+- [x] 2.2 Build passes: `npm run build` — 613256a
 
 #### Manual
 
-- [x] 2.3 Dashboard shows 3 set cards (F2L, OLL, PLL)
-- [x] 2.4 `?error=foo` in URL shows inline error banner
-- [x] 2.5 Topbar shows MemQ link, user email, sign-out
+- [x] 2.3 Dashboard shows 3 set cards (F2L, OLL, PLL) — 613256a
+- [x] 2.4 `?error=foo` in URL shows inline error banner — 613256a
+- [x] 2.5 Topbar shows MemQ link, user email, sign-out — 613256a
 
 ### Phase 3: Set Detail Page — Algorithm List
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint`
-- [ ] 3.2 Build passes: `npm run build`
+- [x] 3.1 Lint passes: `npm run lint`
+- [x] 3.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 F2L set shows 41 algorithms in position order
-- [ ] 3.4 OLL set shows 57 algorithms in position order
-- [ ] 3.5 Nonexistent list id → redirect to `/dashboard?error=...`
-- [ ] 3.6 Valid set URL + `?error=Test` → inline banner renders (no redirect)
-- [ ] 3.7 "← Sets" back link works
+- [x] 3.3 F2L set shows 41 algorithms in position order
+- [x] 3.4 OLL set shows 57 algorithms in position order
+- [x] 3.5 Nonexistent list id → redirect to `/dashboard?error=...`
+- [x] 3.6 Valid set URL + `?error=Test` → inline banner renders (no redirect)
+- [x] 3.7 "← Sets" back link works
 
 ### Phase 4: Algorithm Detail Page
 
