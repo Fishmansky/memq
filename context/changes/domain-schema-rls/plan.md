@@ -400,21 +400,21 @@ No code changes in this phase. This phase is verification-only.
 
 #### Automated
 
-- [x] 2.1 `src/db/database.types.ts` exists with all four table types
-- [x] 2.2 `npm run build` passes with typed client
-- [x] 2.3 `npm run lint` passes
+- [x] 2.1 `src/db/database.types.ts` exists with all four table types — 3b5f7c7
+- [x] 2.2 `npm run build` passes with typed client — 3b5f7c7
+- [x] 2.3 `npm run lint` passes — 3b5f7c7
 
 #### Manual
 
-- [x] 2.4 Supabase Studio shows all four tables with correct columns
-- [x] 2.5 RLS enabled on all four tables in Studio
-- [x] 2.6 Seed data present: 1 system list, 8 algorithms
+- [x] 2.4 Supabase Studio shows all four tables with correct columns — 3b5f7c7
+- [x] 2.5 RLS enabled on all four tables in Studio — 3b5f7c7
+- [x] 2.6 Seed data present: 1 system list, 8 algorithms — 3b5f7c7
 
 ### Phase 3: RLS smoke test
 
 #### Manual
 
-- [ ] 3.1 System list visible to both user A and user B
-- [ ] 3.2 User A custom list invisible to user B
-- [ ] 3.3 User A algorithms invisible to user B
-- [ ] 3.4 User A practice session invisible to user B
+- [x] 3.1 System list visible to both user A and user B
+- [x] 3.2 User A custom list invisible to user B
+- [x] 3.3 User A algorithms invisible to user B
+- [x] 3.4 User A practice session invisible to user B
