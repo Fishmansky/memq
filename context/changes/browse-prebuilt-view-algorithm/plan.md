@@ -297,26 +297,26 @@ Create the `/sets/[id]/[algoId]` page that shows the algorithm's name and its fu
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint` — db48ebc
+- [x] 1.2 Build passes: `npm run build` — db48ebc
 
 #### Manual
 
-- [x] 1.3 Sign in → lands on `/dashboard` (not `/`)
-- [x] 1.4 Navigate to `/sets/*` signed out → redirected to `/auth/signin`
+- [x] 1.3 Sign in → lands on `/dashboard` (not `/`) — db48ebc
+- [x] 1.4 Navigate to `/sets/*` signed out → redirected to `/auth/signin` — db48ebc
 
 ### Phase 2: Dashboard — Sets List
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 Dashboard shows 3 set cards (F2L, OLL, PLL)
-- [ ] 2.4 `?error=foo` in URL shows inline error banner
-- [ ] 2.5 Topbar shows MemQ link, user email, sign-out
+- [x] 2.3 Dashboard shows 3 set cards (F2L, OLL, PLL)
+- [x] 2.4 `?error=foo` in URL shows inline error banner
+- [x] 2.5 Topbar shows MemQ link, user email, sign-out
 
 ### Phase 3: Set Detail Page — Algorithm List
 

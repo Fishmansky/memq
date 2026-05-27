@@ -1,0 +1,16 @@
+---
+interface Props {
+  id: string;
+  name: string;
+}
+
+const { id, name: setName } = Astro.props;
+---
+
+<a
+  href={`/sets/${id}`}
+  class="block rounded-xl border border-white/10 bg-white/10 p-6 backdrop-blur-xl transition-colors hover:bg-white/20"
+>
+  <h2 class="text-xl font-semibold text-white">{setName}</h2>
+  <span class="mt-2 block text-sm text-purple-300">View algorithms →</span>
+</a>
