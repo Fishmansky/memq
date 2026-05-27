@@ -1,7 +1,7 @@
 ---
 change_id: browse-prebuilt-view-algorithm
 title: Browse pre-built algorithm sets + view algorithm
-status: implementing
+status: implemented
 roadmap_id: S-01
 prd_refs: FR-001, FR-002, FR-003, FR-006, FR-007
 prerequisites: domain-schema-rls

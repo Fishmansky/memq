@@ -337,13 +337,13 @@ Create the `/sets/[id]/[algoId]` page that shows the algorithm's name and its fu
 
 #### Automated
 
-- [x] 4.1 Lint passes: `npm run lint`
-- [x] 4.2 Build passes: `npm run build`
+- [x] 4.1 Lint passes: `npm run lint` — aeaf208
+- [x] 4.2 Build passes: `npm run build` — aeaf208
 
 #### Manual
 
-- [x] 4.3 Algorithm name renders as page heading
-- [x] 4.4 F2L Basic 1 shows 3 chips: `R`, `U`, `R'`
-- [x] 4.5 OLL 1 shows 9 chips with no stray parentheses
-- [x] 4.6 Disabled Practice button visible and greyed out
-- [x] 4.7 Back link navigates to parent set
+- [x] 4.3 Algorithm name renders as page heading — aeaf208
+- [x] 4.4 F2L Basic 1 shows 3 chips: `R`, `U`, `R'` — aeaf208
+- [x] 4.5 OLL 1 shows 9 chips with no stray parentheses — aeaf208
+- [x] 4.6 Disabled Practice button visible and greyed out — aeaf208
+- [x] 4.7 Back link navigates to parent set — aeaf208
