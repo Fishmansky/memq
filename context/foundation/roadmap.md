@@ -30,7 +30,7 @@ MemQ targets intermediate Rubik's cube learners who can already solve the cube b
 | ID   | Change ID                      | Outcome (user can …)                                                                                                                      | Prerequisites          | PRD refs                                          | Status   |
 |------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|------------------------|---------------------------------------------------|----------|
 | F-01 | domain-schema-rls              | (foundation) all domain tables and per-user row-level isolation are live; client can read/write domain data                               | —                      | NFR (data isolation)                              | ready    |
-| S-01 | browse-prebuilt-view-algorithm | sign in, land on pre-built algorithm sets within 2 clicks, browse algorithms in any set, open one to read its full move sequence           | F-01                   | FR-001, FR-002, FR-003, FR-006, FR-007            | blocked  |
+| S-01 | browse-prebuilt-view-algorithm | sign in, land on pre-built algorithm sets within 2 clicks, browse algorithms in any set, open one to read its full move sequence           | F-01                   | FR-001, FR-002, FR-003, FR-006, FR-007            | ready    |
 | S-02 | practice-session-core-loop     | start a practice session, input moves via button grid or keyboard, get immediate red/green/yellow slot feedback, see streak counter, get "You're PRO!" on 3rd consecutive clean run | F-01, S-01 | US-01, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013 | proposed |
 | S-03 | progress-tracking              | view total sessions completed globally (persists across browser sessions)                                                                  | S-02                   | FR-014                                            | proposed |
 | S-04 | custom-list-algorithm-entry    | create a custom algorithm list, add algorithms by name + move sequence, and receive a duplicate-detection prompt when the sequence matches an existing algorithm | F-01 | FR-004, FR-005, FR-015 | proposed |
@@ -84,7 +84,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Which algorithm sets (OLL subset, full PLL, CFOP beginner?) ship at launch, and who seeds the database rows? — Owner: user. Block: yes.
 - **Risk:** This slice is on the critical path to the north star (S-02 depends on it). Resolving the content question — even with a minimal seed of 5–10 standard OLL algorithms — immediately unblocks Stream A. Delay here delays the entire north star path.
-- **Status:** blocked
+- **Status:** ready
 
 ### S-02: Practice session — core loop
 
@@ -129,7 +129,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | Roadmap ID | Change ID                      | Suggested issue title                                        | Ready for `/10x-plan` | Notes                                                                                 |
 |------------|--------------------------------|--------------------------------------------------------------|-----------------------|---------------------------------------------------------------------------------------|
 | F-01       | domain-schema-rls              | Domain schema + Supabase RLS for MemQ                        | yes                   | Run `/10x-plan domain-schema-rls`; must complete before any domain slice              |
-| S-01       | browse-prebuilt-view-algorithm | Browse pre-built algorithm sets + view algorithm             | no                    | Blocked by Open Roadmap Q 1 (content curation decision)                               |
+| S-01       | browse-prebuilt-view-algorithm | Browse pre-built algorithm sets + view algorithm             | yes                   | Content seeded in supabase/algos_seed.sql; run `/10x-plan browse-prebuilt-view-algorithm` |
 | S-02       | practice-session-core-loop     | Practice session core loop (move input + feedback + streak)  | no                    | Proposed; depends on S-01                                                             |
 | S-03       | progress-tracking              | Progress tracking — total sessions completed                 | no                    | Proposed; depends on S-02                                                             |
 | S-04       | custom-list-algorithm-entry    | Custom algorithm list + algorithm entry + duplicate detection | no                    | Proposed; ready after F-01 — run `/10x-plan custom-list-algorithm-entry` in parallel with S-01 |
