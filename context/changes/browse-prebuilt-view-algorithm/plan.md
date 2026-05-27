@@ -297,13 +297,13 @@ Create the `/sets/[id]/[algoId]` page that shows the algorithm's name and its fu
 
 #### Automated
 
-- [ ] 1.1 Lint passes: `npm run lint`
-- [ ] 1.2 Build passes: `npm run build`
+- [x] 1.1 Lint passes: `npm run lint`
+- [x] 1.2 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 1.3 Sign in → lands on `/dashboard` (not `/`)
-- [ ] 1.4 Navigate to `/sets/*` signed out → redirected to `/auth/signin`
+- [x] 1.3 Sign in → lands on `/dashboard` (not `/`)
+- [x] 1.4 Navigate to `/sets/*` signed out → redirected to `/auth/signin`
 
 ### Phase 2: Dashboard — Sets List
 
