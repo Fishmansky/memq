@@ -414,7 +414,7 @@ No code changes in this phase. This phase is verification-only.
 
 #### Manual
 
-- [x] 3.1 System list visible to both user A and user B
-- [x] 3.2 User A custom list invisible to user B
-- [x] 3.3 User A algorithms invisible to user B
-- [x] 3.4 User A practice session invisible to user B
+- [x] 3.1 System list visible to both user A and user B — e347ccb
+- [x] 3.2 User A custom list invisible to user B — e347ccb
+- [x] 3.3 User A algorithms invisible to user B — e347ccb
+- [x] 3.4 User A practice session invisible to user B — e347ccb
