@@ -137,6 +137,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 ## Open Roadmap Questions
 
 1. **Which pre-built algorithm sets ship at launch, and who seeds the database?** — Owner: user. Block: S-01 (and transitively S-02 — the north star).
+Answer: pre-built algorithms are stored in supabase/algos_seed.sql - it has been already supplied to production database
 
 ## Parked
 
