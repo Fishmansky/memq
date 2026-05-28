@@ -4,6 +4,7 @@ researched_at: 2026-05-21
 recommended_platform: Cloudflare Workers + Pages
 runner_up: Netlify
 context_type: mvp
+custom_domain: memq.proxilius.eu
 tech_stack:
   language: TypeScript
   framework: Astro 6 + React 19
@@ -79,6 +80,7 @@ Finally, the team discovered that practice session stat updates — a server act
 
 ## Operational Story
 
+- **Custom domain**: `memq.proxilius.eu` — configured in `wrangler.jsonc` as `custom_domain: true` route. DNS managed on Cloudflare; SSL auto-provisioned.
 - **Preview deploys**: Every branch pushed to the connected GitHub repo automatically gets a `*.pages.dev` preview URL via Cloudflare Pages CI integration. These are public by default — add Cloudflare Access (zero-trust policy) to protect unreleased branches if auth bypass is a concern.
 - **Secrets**: Local secrets live in `.dev.vars` (gitignored). Production secrets are set per environment via `wrangler pages secret put SUPABASE_URL` and `wrangler pages secret put SUPABASE_KEY`, or via Cloudflare dashboard → Pages → Settings → Environment variables. Rotation: run `wrangler pages secret put` with new value; redeploy to pick up.
 - **Rollback**: `wrangler rollback [deployment-id]` for Workers deployments; for Pages, republish a previous deployment via Cloudflare dashboard → Pages → Deployments → select build → Rollback. Typical time-to-revert: ~60 seconds. DB schema migrations (Supabase) do not roll back automatically — plan forward-compatible migrations.
