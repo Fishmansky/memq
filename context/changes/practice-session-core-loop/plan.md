@@ -306,17 +306,17 @@ No schema changes required. Tables `practice_sessions` and `algorithm_mastery` e
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes
-- [x] 1.2 `npm run build` passes
+- [x] 1.1 `npm run lint` passes — 45a6553
+- [x] 1.2 `npm run build` passes — 45a6553
 
 #### Manual
 
-- [x] 1.3 POST with valid body + auth returns 200 with `{ consecutiveClean, masteryReached }`
-- [x] 1.4 POST with invalid body returns 400
-- [x] 1.5 Unauthenticated POST returns 401
-- [x] 1.6 `practice_sessions` row inserted after request
-- [x] 1.7 `consecutive_clean` increments on clean, resets on dirty
-- [x] 1.8 `mastery_reached` flips on 3rd consecutive clean and stays true
+- [ ] 1.3 POST with valid body + auth returns 200 with `{ consecutiveClean, masteryReached }`
+- [ ] 1.4 POST with invalid body returns 400
+- [ ] 1.5 Unauthenticated POST returns 401
+- [ ] 1.6 `practice_sessions` row inserted after request
+- [ ] 1.7 `consecutive_clean` increments on clean, resets on dirty
+- [ ] 1.8 `mastery_reached` flips on 3rd consecutive clean and stays true
 
 ### Phase 2: PracticeSession Island
 
