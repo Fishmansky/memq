@@ -1,10 +1,10 @@
 ---
 change_id: practice-session-core-loop
 title: Practice session core loop — move input, per-move feedback, streak counter
-status: impl_reviewed
+status: archived
 created: 2026-05-28
 updated: 2026-05-29
-archived_at: null
+archived_at: 2026-05-29T18:07:09Z
 ---
 
 ## Notes
