@@ -391,28 +391,28 @@ No schema changes required. Tables `practice_sessions` and `algorithm_mastery` e
 
 #### Manual
 
-- [x] 2.3 Move overview visible idle; hidden on session start
-- [x] 2.4 Slots blank (no move text) in active phase
-- [x] 2.5 Start button activates session; hotkeys inactive before
-- [x] 2.6 Correct key turns slot green and advances
-- [x] 2.7 Wrong key turns slot red; stays until correct move entered; error count accumulates
-- [x] 2.8 Full move grid always shown in active phase; all buttons clickable
-- [x] 2.9 X2 button highlights when active; move click while X2 active dispatches doubled move and clears X2
-- [x] 2.10 Key 2 toggles X2 modifier
-- [x] 2.11 Completion banner shows correct clean/dirty message
-- [x] 2.12 PRO banner appears on 3rd consecutive clean
-- [x] 2.13 Try Again resets to idle (overview reappears)
-- [x] 2.15 Wide-move input: press `w` (toggles W), then move button/key → wide token dispatched, W clears
+- [x] 2.3 Move overview visible idle; hidden on session start — 4975a9e
+- [x] 2.4 Slots blank (no move text) in active phase — 4975a9e
+- [x] 2.5 Start button activates session; hotkeys inactive before — 4975a9e
+- [x] 2.6 Correct key turns slot green and advances — 4975a9e
+- [x] 2.7 Wrong key turns slot red; stays until correct move entered; error count accumulates — 4975a9e
+- [x] 2.8 Full move grid always shown in active phase; all buttons clickable — 4975a9e
+- [x] 2.9 X2 button highlights when active; move click while X2 active dispatches doubled move and clears X2 — 4975a9e
+- [x] 2.10 Key 2 toggles X2 modifier — 4975a9e
+- [x] 2.11 Completion banner shows correct clean/dirty message — 4975a9e
+- [x] 2.12 PRO banner appears on 3rd consecutive clean — 4975a9e
+- [x] 2.13 Try Again resets to idle (overview reappears) — 4975a9e
+- [x] 2.15 Wide-move input: press `w` (toggles W), then move button/key → wide token dispatched, W clears — 4975a9e
 
 ### Phase 3: Wire Into Algo Detail Page
 
 #### Automated
 
-- [x] 3.1 `npm run lint` passes
-- [x] 3.2 `npm run build` passes (Cloudflare Workers adapter)
+- [x] 3.1 `npm run lint` passes — 4975a9e
+- [x] 3.2 `npm run build` passes (Cloudflare Workers adapter) — 4975a9e
 
 #### Manual
 
-- [x] 3.3 Full happy path end-to-end
-- [x] 3.4 Full error path end-to-end
-- [x] 3.5 No regressions on algo detail page (MoveSequence, nav, title)
+- [x] 3.3 Full happy path end-to-end — 4975a9e
+- [x] 3.4 Full error path end-to-end — 4975a9e
+- [x] 3.5 No regressions on algo detail page (MoveSequence, nav, title) — 4975a9e
