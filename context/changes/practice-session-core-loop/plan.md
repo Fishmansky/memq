@@ -385,34 +385,34 @@ No schema changes required. Tables `practice_sessions` and `algorithm_mastery` e
 
 #### Automated
 
-- [x] 2.0 `npm install react-hotkeys-hook@5.2.4` succeeds
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` passes
+- [x] 2.0 `npm install react-hotkeys-hook@5.2.4` succeeds — b5877f1
+- [x] 2.1 `npm run lint` passes — b5877f1
+- [x] 2.2 `npm run build` passes — b5877f1
 
 #### Manual
 
-- [ ] 2.3 Move overview visible idle; hidden on session start
-- [ ] 2.4 Slots blank (no move text) in active phase
-- [ ] 2.5 Start button activates session; hotkeys inactive before
-- [ ] 2.6 Correct key turns slot green and advances
-- [ ] 2.7 Wrong key turns slot red; stays until correct move entered; error count accumulates
-- [ ] 2.8 Full move grid always shown in active phase; all buttons clickable
-- [ ] 2.9 X2 button highlights when active; move click while X2 active dispatches doubled move and clears X2
-- [ ] 2.10 Key 2 toggles X2 modifier
-- [ ] 2.11 Completion banner shows correct clean/dirty message
-- [ ] 2.12 PRO banner appears on 3rd consecutive clean
-- [ ] 2.13 Try Again resets to idle (overview reappears)
-- [ ] 2.15 Wide-move input: press `w` (toggles W), then move button/key → wide token dispatched, W clears
+- [x] 2.3 Move overview visible idle; hidden on session start
+- [x] 2.4 Slots blank (no move text) in active phase
+- [x] 2.5 Start button activates session; hotkeys inactive before
+- [x] 2.6 Correct key turns slot green and advances
+- [x] 2.7 Wrong key turns slot red; stays until correct move entered; error count accumulates
+- [x] 2.8 Full move grid always shown in active phase; all buttons clickable
+- [x] 2.9 X2 button highlights when active; move click while X2 active dispatches doubled move and clears X2
+- [x] 2.10 Key 2 toggles X2 modifier
+- [x] 2.11 Completion banner shows correct clean/dirty message
+- [x] 2.12 PRO banner appears on 3rd consecutive clean
+- [x] 2.13 Try Again resets to idle (overview reappears)
+- [x] 2.15 Wide-move input: press `w` (toggles W), then move button/key → wide token dispatched, W clears
 
 ### Phase 3: Wire Into Algo Detail Page
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` passes
-- [ ] 3.2 `npm run build` passes (Cloudflare Workers adapter)
+- [x] 3.1 `npm run lint` passes
+- [x] 3.2 `npm run build` passes (Cloudflare Workers adapter)
 
 #### Manual
 
-- [ ] 3.3 Full happy path end-to-end
-- [ ] 3.4 Full error path end-to-end
-- [ ] 3.5 No regressions on algo detail page (MoveSequence, nav, title)
+- [x] 3.3 Full happy path end-to-end
+- [x] 3.4 Full error path end-to-end
+- [x] 3.5 No regressions on algo detail page (MoveSequence, nav, title)

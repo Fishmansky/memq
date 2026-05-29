@@ -115,7 +115,7 @@ type Action =
   | { type: "TOGGLE_WIDE_MODIFIER" }
   | { type: "TOGGLE_DOUBLE_MODIFIER" }
   | { type: "RETRY" }
-  | { type: "RESET" }
+  | { type: "STOP" }
   | { type: "SUBMIT_RESULT"; result: SessionResult }
   | { type: "SUBMIT_ERROR"; message: string };
 
@@ -154,14 +154,12 @@ function reducer(state: State, action: Action, tokens: string[]): State {
         };
       }
 
-      // Wrong move: mark slot red. Count an error only on the first wrong
-      // attempt for this slot (retries on an already-wrong slot don't stack).
-      const alreadyWrong = state.slotResults[state.currentIndex] === "wrong";
+      // Wrong move: mark slot red and count every wrong attempt.
       slotResults[state.currentIndex] = "wrong";
       return {
         ...state,
         slotResults,
-        errorCount: alreadyWrong ? state.errorCount : state.errorCount + 1,
+        errorCount: state.errorCount + 1,
         wideModifier: false,
         doubleModifier: false,
       };
@@ -176,7 +174,7 @@ function reducer(state: State, action: Action, tokens: string[]): State {
     case "RETRY":
       return { ...state, phase: "submitting", submitError: null };
 
-    case "RESET":
+    case "STOP":
       return {
         ...state,
         phase: "idle",
@@ -379,13 +377,15 @@ export default function PracticeSession({ algorithmId, moves }: PracticeSessionP
             <div
               key={i}
               className={cn(
-                "h-10 w-10 rounded transition-colors",
-                res === "pending" && "border border-white/20 bg-white/10",
+                "flex h-10 w-10 items-center justify-center rounded font-mono text-sm text-white transition-colors",
+                res === "pending" && "bg-gray-600",
                 res === "correct" && "bg-green-500",
                 res === "wrong" && "bg-red-500",
                 phase === "active" && i === currentIndex && "ring-2 ring-blue-400",
               )}
-            />
+            >
+              {res === "correct" ? tokens[i] : ""}
+            </div>
           ))}
         </div>
       )}
@@ -394,6 +394,15 @@ export default function PracticeSession({ algorithmId, moves }: PracticeSessionP
       {phase === "active" && (
         <div className="space-y-4">
           <div className="flex gap-2">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                dispatch({ type: "STOP" });
+              }}
+            >
+              Stop
+            </Button>
             <button
               type="button"
               onClick={() => {
@@ -432,12 +441,12 @@ export default function PracticeSession({ algorithmId, moves }: PracticeSessionP
         </div>
       )}
 
-      {/* Try Again — complete phase */}
+      {/* Try Again — restart a fresh active session (skip overview) */}
       {phase === "complete" && (
         <Button
           variant="outline"
           onClick={() => {
-            dispatch({ type: "RESET" });
+            dispatch({ type: "START" });
           }}
         >
           Try Again
