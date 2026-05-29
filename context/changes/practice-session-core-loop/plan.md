@@ -51,13 +51,15 @@ Three phases in dependency order: API route first (testable in isolation), then 
 
 **UPSERT streak logic in API route:** On clean session, `consecutive_clean` must increment by 1 (not set to 1). Supabase `.upsert()` does not natively support field-level increment. Use **fetch-then-upsert**: call `.select().maybeSingle()` first to get the current row (`null` = first-ever session), compute the new `consecutive_clean` value in JS, then call `.upsert({ onConflict: 'user_id,algorithm_id' })` with the computed value. Two DB calls per session — acceptable latency; no custom RPC or Postgres function needed.
 
-**Key→move mapping — sequence input:** Wide moves and double moves use a buffered two-key sequence rather than modifier combos. Drop all `ctrl+*` entries from `KEY_TO_MOVE`.
+**Key→move mapping — two explicit modifiers, no buffer:** Both wide moves and double moves use toggle modifiers. Drop all `ctrl+*` entries from `KEY_TO_MOVE`. No `useRef` timers, no `inputBuffer`.
 
-- **Base moves:** `r` → `"R"`, `shift+r` → `"R'"`, etc. (instant, no buffer)
-- **Wide moves:** `w` prefix + letter — `w` is not a valid move token, so no timeout needed. On `w` keypress, set `inputBuffer: "w"` and wait for the next key unconditionally. `w`+`r` → `"r"`, `w`+`shift+r` → `"r'"`, `w`+`u` → `"u"`, etc.
-- **Double moves:** letter + `2` suffix — the letter alone IS a valid move, so a 800 ms timeout is required. On any base-move keypress, set `inputBuffer` to that move and start the timer. `r`+`2` → `"R2"`, `u`+`2` → `"U2"`. If `2` doesn't arrive within 800 ms, flush buffered move as standalone via `INPUT_MOVE`.
+- **Base moves:** `r` → `"R"`, `shift+r` → `"R'"`, etc. (instant)
+- **Wide modifier:** key `"w"` + on-screen W button. When activated, `wideModifier: true`. Next move lowercased before dispatch (`"R"` → `"r"`, `"R'"` → `"r'"`). Resets to `false` after dispatch.
+- **Double modifier:** key `"2"` + on-screen X2 button. When activated, `doubleModifier: true`. Next move gets `"2"` appended (`"R"` → `"R2"`). Resets to `false` after dispatch.
+- Both active simultaneously: `"R"` → `"r2"` (wide takes priority over double in token assembly: lowercase first, then append `"2"`).
+- Neither modifier dispatches a move itself.
 
-Buffer state: add `inputBuffer: string | null` to reducer state. Manage the 800 ms double-move timeout via `useRef<ReturnType<typeof setTimeout> | null>` outside the reducer (side effect — not pure state). Wide-move buffer needs no timer.
+Modifier state: `wideModifier: boolean` + `doubleModifier: boolean` in reducer. Both reset to `false` after any move dispatch.
 
 **Slot state on retry:** When a slot is in `wrong` state, the next correct input for that slot should turn it green (not add a new error). Error count increments only on the wrong attempt, not on each retry keystroke.
 
@@ -131,12 +133,11 @@ Library vetted in research.md: MIT, ~4 KB, zero runtime deps, SSR-safe, React 19
 
 **File:** `src/components/app/PracticeSession.tsx`
 
-**Intent:** Define a module-level constant mapping key combo strings to move tokens. Covers base moves, shift-prime, ctrl-wide, and ctrl-shift-wide-prime.
+**Intent:** Define a module-level constant mapping key combo strings to move tokens. Covers base moves, shift-prime, and modifier sentinels for `w` (wide) and `2` (double).
 
 **Contract:**
 
 ```ts
-// Base moves only — wide (w+letter) and double (letter+2) handled via sequence input
 const KEY_TO_MOVE: Record<string, string> = {
   r: "R",  "shift+r": "R'",
   u: "U",  "shift+u": "U'",
@@ -150,6 +151,8 @@ const KEY_TO_MOVE: Record<string, string> = {
   m: "M",  "shift+m": "M'",
   e: "E",  "shift+e": "E'",
   s: "S",  "shift+s": "S'",
+  w: "__wide_modifier__",   // sentinel — toggles wideModifier
+  2: "__double_modifier__", // sentinel — toggles doubleModifier
 };
 ```
 
@@ -157,15 +160,19 @@ const KEY_TO_MOVE: Record<string, string> = {
 
 **File:** `src/components/app/PracticeSession.tsx`
 
-**Intent:** `useReducer` managing `{ phase: 'idle' | 'active' | 'submitting' | 'complete' | 'error', slotResults: Array<'pending' | 'correct' | 'wrong'>, currentIndex: number, errorCount: number, result: { consecutiveClean: number; masteryReached: boolean } | null, inputBuffer: string | null, submitError: string | null }`. Actions: `START`, `INPUT_MOVE`, `SUBMIT_RESULT`, `SUBMIT_ERROR`. Manage the 800 ms sequence timeout via `useRef<ReturnType<typeof setTimeout> | null>` outside the reducer (side effect — not pure state).
+**Intent:** `useReducer` managing `{ phase: 'idle' | 'active' | 'submitting' | 'complete' | 'error', slotResults: Array<'pending' | 'correct' | 'wrong'>, currentIndex: number, errorCount: number, result: { consecutiveClean: number; masteryReached: boolean } | null, wideModifier: boolean, doubleModifier: boolean, submitError: string | null }`. No `inputBuffer`. No `useRef` timers. Actions: `START`, `INPUT_MOVE`, `TOGGLE_WIDE_MODIFIER`, `TOGGLE_DOUBLE_MODIFIER`, `SUBMIT_RESULT`, `SUBMIT_ERROR`.
 
-`INPUT_MOVE` action payload is the raw move token string. Reducer checks against `moves[currentIndex]`: match → mark slot `correct`, advance `currentIndex`; mismatch → mark slot `wrong`, increment `errorCount`. When `currentIndex` reaches `moves.length`, transition to `submitting`.
+- `INPUT_MOVE` payload: raw move token string (already assembled by handler — reducer just validates and advances).
+- `TOGGLE_WIDE_MODIFIER`: flips `wideModifier`. Fired by W button click or key `"w"`.
+- `TOGGLE_DOUBLE_MODIFIER`: flips `doubleModifier`. Fired by X2 button click or key `"2"`.
+- After `INPUT_MOVE` dispatch: reducer resets both `wideModifier` and `doubleModifier` to `false`.
+- Token assembly happens in the keyboard handler (not the reducer): if `wideModifier`, lowercase the base token; if `doubleModifier`, append `"2"`. Both: lowercase then append `"2"` (e.g. `"r2"`).
 
 #### 3. Keyboard hook
 
 **File:** `src/components/app/PracticeSession.tsx`
 
-**Intent:** Single `useHotkeys` call covering all keys in `KEY_TO_MOVE`. Dispatches `INPUT_MOVE` with the mapped token. Active only when `phase === 'active'`.
+**Intent:** Single `useHotkeys` call covering all keys in `KEY_TO_MOVE`. Active only when `phase === 'active'`. Handles three cases: wide modifier sentinel, double modifier sentinel, or base move (assembled with active modifiers before dispatch).
 
 **Contract:**
 
@@ -173,9 +180,21 @@ const KEY_TO_MOVE: Record<string, string> = {
 useHotkeys(
   Object.keys(KEY_TO_MOVE),
   (_, handler) => {
-    const combo = handler.keys!.join("+");
-    const move = KEY_TO_MOVE[combo];
-    if (move) dispatch({ type: "INPUT_MOVE", move });
+    const keys = handler.keys ?? [];
+    const mods = handler.shift ? ["shift"] : [];
+    const combo = [...mods, ...keys].join("+");
+    const mapped = KEY_TO_MOVE[combo];
+    if (!mapped) return;
+    if (mapped === "__wide_modifier__") {
+      dispatch({ type: "TOGGLE_WIDE_MODIFIER" });
+    } else if (mapped === "__double_modifier__") {
+      dispatch({ type: "TOGGLE_DOUBLE_MODIFIER" });
+    } else {
+      let move = mapped;
+      if (wideModifier) move = move.toLowerCase(); // R → r, R' → r'
+      if (doubleModifier) move = move + "2";
+      dispatch({ type: "INPUT_MOVE", move });
+    }
   },
   { enabled: phase === "active", preventDefault: true }
 );
@@ -185,15 +204,51 @@ useHotkeys(
 
 **File:** `src/components/app/PracticeSession.tsx`
 
-**Intent:** Render parsed moves as an array of colored slot elements. Color class driven by `slotResults[i]`: `pending` → neutral, `correct` → `bg-green-500`, `wrong` → `bg-red-500`. Current slot (`currentIndex`) gets a ring to indicate focus. Below slots, render a button for each unique move in the sequence (deduped, sorted) that dispatches `INPUT_MOVE` on click — handles double moves and any move the user cannot type.
+**Intent:** Render parsed moves as an array of colored slot elements. Slots are **blank** — no move text shown. Color class driven by `slotResults[i]`: `pending` → neutral (`bg-white/10 border border-white/20`), `correct` → `bg-green-500`, `wrong` → `bg-red-500`. Current slot (`currentIndex`) gets a ring to indicate focus.
+
+Below slots, render the **full moves grid** — all possible moves, always shown, regardless of what the algorithm uses. Three sub-grids with keyboard-layout positioning using CSS grid:
+
+**Side layers moves grid** (face turns + wide moves):
+```
+Layout (col × row, 0-indexed):
+       U      U'            ← row 0, cols 3,4
+       u      u'            ← row 1, cols 3,4
+L' l'  F'     F  r  R      ← row 2, cols 0,1,2,4,5,6 (gap at col 3)
+         f' f               ← row 3, cols 2,3 (or 3,4 — center of F column)
+         b  b'              ← row 4
+L  l   B      B' r' R'     ← row 5
+       d'     d             ← row 6
+       D'     D             ← row 7
+```
+
+**Central layers moves grid** (M, E, S — 3×3 cross layout):
+```
+     M'       ← top center
+E' S' S E     ← middle row
+     M        ← bottom center
+```
+
+**Cube rotation moves grid** (x, y, z — 3×3 cross layout):
+```
+     x        ← top center
+y  z' z  y'   ← middle row
+     x'       ← bottom center
+```
+
+Each move button dispatches `INPUT_MOVE` on click (applying active modifiers before dispatch). Two modifier buttons shown separately above the grids:
+
+- **W button** — dispatches `TOGGLE_WIDE_MODIFIER`. Highlighted when `wideModifier === true`. Key `"w"`.
+- **X2 button** — dispatches `TOGGLE_DOUBLE_MODIFIER`. Highlighted when `doubleModifier === true`. Key `"2"`.
+
+Clicking any move button while modifiers active assembles the final token (lowercase if wide, append `"2"` if double, both if both), dispatches `INPUT_MOVE`, and both modifiers reset.
 
 #### 5. Session lifecycle UI
 
 **File:** `src/components/app/PracticeSession.tsx`
 
 **Intent:**
-- **Idle phase:** Render "Start Practice" button (reuse `Button` from `@/components/ui/button`). On click, dispatch `START`.
-- **Active phase:** Render slot grid + move buttons. No start button.
+- **Idle phase:** Render move sequence overview (same token rendering as `MoveSequence.astro` — `moves.replace(/[()]/g, "").split(" ").filter(Boolean)` as styled spans) + "Start Practice" button (reuse `Button` from `@/components/ui/button`). On click, dispatch `START`. Overview visible only in idle.
+- **Active phase:** Render slot grid (blank) + full moves grid + X2 modifier button. Move sequence overview hidden.
 - **Submitting phase:** POST `{ algorithmId, isClean: errorCount === 0, errorCount }` to `/api/practice/complete`. On success, dispatch `SUBMIT_RESULT`. On network error or non-2xx response, dispatch `SUBMIT_ERROR` with error message text — transitions phase to `error`.
 - **Error phase:** Show error banner (follow `bannerError` pattern from `[algoId].astro:52-56`) with message and a "Retry" button that re-attempts the POST. Slot results remain visible.
 - **Complete phase:** Render result banner above slots. If `result.masteryReached` is true or `result.consecutiveClean >= 3`, show PRO banner (`"You're PRO!"`); otherwise show clean/dirty summary. Render "Try Again" button that resets to idle.
@@ -216,15 +271,22 @@ interface PracticeSessionProps {
 
 #### Manual Verification
 
+- Move sequence overview visible in idle; hidden once session starts.
+- Slots are blank (no move text shown) — color only.
 - Start button activates session; hotkeys inactive before clicking Start.
 - Correct key press turns slot green and advances to next slot.
-- Wrong key press turns slot red; slot stays red until correct move entered; error count reflects all wrong attempts.
-- On-screen move buttons work identically to keyboard.
+- Wrong key press turns slot red; stays until correct move entered; error count accumulates.
+- On-screen move buttons (full grid) work identically to keyboard.
+- W button highlights when active; clicking a move while W active dispatches wide move and clears W.
+- X2 button highlights when active; clicking a move while X2 active dispatches doubled move and clears X2.
+- Key `w` toggles W modifier; key `2` toggles X2 modifier.
+- W + X2 both active: move dispatched as wide-double (e.g. `"r2"`).
 - After last slot, banner appears with correct clean/dirty message.
 - PRO banner appears on reaching 3 consecutive cleans.
-- "Try Again" resets all slots to pending and returns to idle.
-- Wide-move input: pressing `w` then `r` within 800 ms dispatches `"r"` (if in algorithm); `w`+`shift+r` dispatches `"r'"`.
-- Double-move input: pressing `r` then `2` within 800 ms dispatches `"R2"` (if in algorithm); timeout with no `2` treats `r` as standalone `"R"`.
+- "Try Again" resets all slots to pending and returns to idle (overview reappears).
+- Wide-move input: press `w` (W activates), press `r` → `"r"` dispatched, W clears.
+- Double-move input: press `2` (X2 activates), press `r` → `"R2"` dispatched, X2 clears.
+- Combined: both active, press `r` → `"r2"` dispatched, both clear.
 - No console errors during session or on completion.
 
 **Pause here for manual confirmation before proceeding to Phase 3.**
@@ -243,9 +305,9 @@ Replace the disabled "Practice (coming soon)" button on the algorithm detail pag
 
 **File:** `src/pages/sets/[id]/[algoId].astro`
 
-**Intent:** Import `PracticeSession` and replace the disabled button block (lines 61-66) with `<PracticeSession algorithmId={algorithm.id} moves={algorithm.moves} client:load />`.
+**Intent:** Import `PracticeSession`. Remove the static `<MoveSequence>` block (lines 58-60) — PracticeSession renders the move overview itself in idle phase. Replace the disabled button block (lines 61-66) with `<PracticeSession algorithmId={algorithm.id} moves={algorithm.moves} client:load />`.
 
-**Contract:** Single import and one JSX element swap. No new data fetching required — `algorithm.id` and `algorithm.moves` are already loaded on line 14-25.
+**Contract:** Remove the `MoveSequence` import and its wrapping `<div class="mb-8">`. Add PracticeSession import and swap disabled button. No new data fetching — `algorithm.id` and `algorithm.moves` already loaded on line 14-25.
 
 ### Success Criteria
 
@@ -269,15 +331,16 @@ Replace the disabled "Practice (coming soon)" button on the algorithm detail pag
 ### Manual Testing Steps
 
 1. Navigate to `/sets/<id>/<algoId>` as authenticated user.
-2. Confirm "Start Practice" button visible; hotkeys do nothing before clicking.
-3. Click Start — slots appear, hotkeys activate.
-4. Input each correct move via keyboard — each slot turns green sequentially.
+2. Confirm move sequence overview visible; "Start Practice" button visible; hotkeys do nothing.
+3. Click Start — overview hides, blank slots appear, full move grid appears, hotkeys activate.
+4. Input each correct move via keyboard — each blank slot turns green sequentially.
 5. Input a wrong move — slot turns red; verify correct move needed to advance.
 6. Complete session with 0 errors — verify green banner, DB row `is_clean=true`, `consecutive_clean` incremented.
 7. Complete session with errors — verify dirty banner, `consecutive_clean` reset to 0.
 8. Complete 3 consecutive clean sessions for same algorithm — verify PRO banner on 3rd.
-9. Verify "Try Again" resets island to idle state without page reload.
-10. Verify double-move buttons (e.g., R2 if in algorithm) clickable and correctly validate.
+9. Verify "Try Again" resets island to idle — overview reappears, slots gone.
+10. Verify X2 modifier: click X2 (or press `2`), then click a move button — doubled move dispatched, X2 clears.
+11. Verify wide-move input: press `w` then `r` — `"r"` dispatched if in algorithm.
 
 ## Performance Considerations
 
@@ -322,21 +385,24 @@ No schema changes required. Tables `practice_sessions` and `algorithm_mastery` e
 
 #### Automated
 
-- [ ] 2.0 `npm install react-hotkeys-hook@5.2.4` succeeds
-- [ ] 2.1 `npm run lint` passes
-- [ ] 2.2 `npm run build` passes
+- [x] 2.0 `npm install react-hotkeys-hook@5.2.4` succeeds
+- [x] 2.1 `npm run lint` passes
+- [x] 2.2 `npm run build` passes
 
 #### Manual
 
-- [ ] 2.3 Start button activates session; hotkeys inactive before
-- [ ] 2.4 Correct key turns slot green and advances
-- [ ] 2.5 Wrong key turns slot red; stays until correct move entered; error count accumulates
-- [ ] 2.6 On-screen move buttons work identically to keyboard
-- [ ] 2.7 Completion banner shows correct clean/dirty message
-- [ ] 2.8 PRO banner appears on 3rd consecutive clean
-- [ ] 2.9 Try Again resets to idle
-- [ ] 2.10 Wide-move sequence input works (w+r = "r", w+shift+r = "r'")
-- [ ] 2.11 Double-move sequence input works (r+2 = "R2"); timeout flushes as standalone move
+- [ ] 2.3 Move overview visible idle; hidden on session start
+- [ ] 2.4 Slots blank (no move text) in active phase
+- [ ] 2.5 Start button activates session; hotkeys inactive before
+- [ ] 2.6 Correct key turns slot green and advances
+- [ ] 2.7 Wrong key turns slot red; stays until correct move entered; error count accumulates
+- [ ] 2.8 Full move grid always shown in active phase; all buttons clickable
+- [ ] 2.9 X2 button highlights when active; move click while X2 active dispatches doubled move and clears X2
+- [ ] 2.10 Key 2 toggles X2 modifier
+- [ ] 2.11 Completion banner shows correct clean/dirty message
+- [ ] 2.12 PRO banner appears on 3rd consecutive clean
+- [ ] 2.13 Try Again resets to idle (overview reappears)
+- [ ] 2.15 Wide-move input: press `w` (toggles W), then move button/key → wide token dispatched, W clears
 
 ### Phase 3: Wire Into Algo Detail Page
 
