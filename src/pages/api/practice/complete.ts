@@ -63,14 +63,23 @@ export const POST: APIRoute = async (context) => {
   ]);
 
   if (sessionResult.error) {
-    return new Response(JSON.stringify({ error: sessionResult.error.message }), {
+    // FK violation = unknown/invalid algorithmId → client error, not server fault.
+    if (sessionResult.error.code === "23503") {
+      return new Response(JSON.stringify({ error: "Invalid algorithmId" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    console.error("practice/complete session insert failed", sessionResult.error);
+    return new Response(JSON.stringify({ error: "Failed to record session" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
   }
 
   if (masteryResult.error) {
-    return new Response(JSON.stringify({ error: masteryResult.error.message }), {
+    console.error("practice/complete mastery read failed", masteryResult.error);
+    return new Response(JSON.stringify({ error: "Failed to record session" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });
@@ -92,7 +101,8 @@ export const POST: APIRoute = async (context) => {
   );
 
   if (upsertError) {
-    return new Response(JSON.stringify({ error: upsertError.message }), {
+    console.error("practice/complete mastery upsert failed", upsertError);
+    return new Response(JSON.stringify({ error: "Failed to record session" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },
     });

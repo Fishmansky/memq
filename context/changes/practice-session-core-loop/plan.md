@@ -51,6 +51,8 @@ Three phases in dependency order: API route first (testable in isolation), then 
 
 **UPSERT streak logic in API route:** On clean session, `consecutive_clean` must increment by 1 (not set to 1). Supabase `.upsert()` does not natively support field-level increment. Use **fetch-then-upsert**: call `.select().maybeSingle()` first to get the current row (`null` = first-ever session), compute the new `consecutive_clean` value in JS, then call `.upsert({ onConflict: 'user_id,algorithm_id' })` with the computed value. Two DB calls per session — acceptable latency; no custom RPC or Postgres function needed.
 
+**Accepted race (impl-review F4):** The read→compute→upsert sequence has a lost-update window — two concurrent completions for the same `(user, algorithm)` can both read `N` and write `N+1`, undercounting the streak by one. `mastery_reached` is monotonic so it never regresses. Accepted for the single-user, low-concurrency usage profile (the only realistic trigger is a fast double-submit / retry). Revisit with an atomic Postgres RPC if streak accuracy under concurrency ever matters.
+
 **Key→move mapping — two explicit modifiers, no buffer:** Both wide moves and double moves use toggle modifiers. Drop all `ctrl+*` entries from `KEY_TO_MOVE`. No `useRef` timers, no `inputBuffer`.
 
 - **Base moves:** `r` → `"R"`, `shift+r` → `"R'"`, etc. (instant)
@@ -61,7 +63,7 @@ Three phases in dependency order: API route first (testable in isolation), then 
 
 Modifier state: `wideModifier: boolean` + `doubleModifier: boolean` in reducer. Both reset to `false` after any move dispatch.
 
-**Slot state on retry:** When a slot is in `wrong` state, the next correct input for that slot should turn it green (not add a new error). Error count increments only on the wrong attempt, not on each retry keystroke.
+**Slot state on retry:** When a slot is in `wrong` state, the next correct input for that slot should turn it green (not add a new error). Error count increments on every wrong keystroke at the current slot (amended per impl-review F3 — per-attempt counting fits the project).
 
 ---
 
@@ -160,7 +162,7 @@ const KEY_TO_MOVE: Record<string, string> = {
 
 **File:** `src/components/app/PracticeSession.tsx`
 
-**Intent:** `useReducer` managing `{ phase: 'idle' | 'active' | 'submitting' | 'complete' | 'error', slotResults: Array<'pending' | 'correct' | 'wrong'>, currentIndex: number, errorCount: number, result: { consecutiveClean: number; masteryReached: boolean } | null, wideModifier: boolean, doubleModifier: boolean, submitError: string | null }`. No `inputBuffer`. No `useRef` timers. Actions: `START`, `INPUT_MOVE`, `TOGGLE_WIDE_MODIFIER`, `TOGGLE_DOUBLE_MODIFIER`, `SUBMIT_RESULT`, `SUBMIT_ERROR`.
+**Intent:** `useReducer` managing `{ phase: 'idle' | 'active' | 'submitting' | 'complete' | 'error', slotResults: Array<'pending' | 'correct' | 'wrong'>, currentIndex: number, errorCount: number, result: { consecutiveClean: number; masteryReached: boolean } | null, wideModifier: boolean, doubleModifier: boolean, submitError: string | null }`. No `inputBuffer`. No `useRef` timers. Actions: `START`, `INPUT_MOVE`, `TOGGLE_WIDE_MODIFIER`, `TOGGLE_DOUBLE_MODIFIER`, `SUBMIT_RESULT`, `SUBMIT_ERROR`, `RETRY` (re-attempt POST from error phase), `STOP` (abandon active session → idle; addendum per impl-review F5).
 
 - `INPUT_MOVE` payload: raw move token string (already assembled by handler — reducer just validates and advances).
 - `TOGGLE_WIDE_MODIFIER`: flips `wideModifier`. Fired by W button click or key `"w"`.
@@ -204,7 +206,7 @@ useHotkeys(
 
 **File:** `src/components/app/PracticeSession.tsx`
 
-**Intent:** Render parsed moves as an array of colored slot elements. Slots are **blank** — no move text shown. Color class driven by `slotResults[i]`: `pending` → neutral (`bg-white/10 border border-white/20`), `correct` → `bg-green-500`, `wrong` → `bg-red-500`. Current slot (`currentIndex`) gets a ring to indicate focus.
+**Intent:** Render parsed moves as an array of colored slot elements. Slots show **no text while pending or wrong**; a slot reveals its move token once **correct** (confirms what was entered). Color class driven by `slotResults[i]`: `pending` → neutral (`bg-white/10 border border-white/20`), `correct` → `bg-green-500`, `wrong` → `bg-red-500`. Current slot (`currentIndex`) gets a ring to indicate focus.
 
 Below slots, render the **full moves grid** — all possible moves, always shown, regardless of what the algorithm uses. Three sub-grids with keyboard-layout positioning using CSS grid:
 
@@ -272,7 +274,7 @@ interface PracticeSessionProps {
 #### Manual Verification
 
 - Move sequence overview visible in idle; hidden once session starts.
-- Slots are blank (no move text shown) — color only.
+- Pending/wrong slots blank; correct slots reveal their token. Color + reveal-on-correct.
 - Start button activates session; hotkeys inactive before clicking Start.
 - Correct key press turns slot green and advances to next slot.
 - Wrong key press turns slot red; stays until correct move entered; error count accumulates.
@@ -392,7 +394,7 @@ No schema changes required. Tables `practice_sessions` and `algorithm_mastery` e
 #### Manual
 
 - [x] 2.3 Move overview visible idle; hidden on session start — 4975a9e
-- [x] 2.4 Slots blank (no move text) in active phase — 4975a9e
+- [x] 2.4 Slots blank while pending/wrong; reveal token on correct (amended per impl-review F1) — 4975a9e
 - [x] 2.5 Start button activates session; hotkeys inactive before — 4975a9e
 - [x] 2.6 Correct key turns slot green and advances — 4975a9e
 - [x] 2.7 Wrong key turns slot red; stays until correct move entered; error count accumulates — 4975a9e
