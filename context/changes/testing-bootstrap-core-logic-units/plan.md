@@ -529,27 +529,27 @@ impact; the endpoint's external behavior is unchanged. No deployment or data mig
 
 #### Automated
 
-- [x] 3.1 All unit specs pass: `npm test`
-- [x] 3.2 Linting passes on new test files: `npm run lint`
-- [x] 3.3 Build unaffected: `npm run build`
+- [x] 3.1 All unit specs pass: `npm test` — 73e565c
+- [x] 3.2 Linting passes on new test files: `npm run lint` — 73e565c
+- [x] 3.3 Build unaffected: `npm run build` — 73e565c
 
 #### Manual
 
-- [x] 3.4 Broken expected-token fails the reducer test (oracle is independent)
-- [x] 3.5 Parity test fails if a grid token is removed from `KEY_TO_MOVE`
+- [x] 3.4 Broken expected-token fails the reducer test (oracle is independent) — 73e565c
+- [x] 3.5 Parity test fails if a grid token is removed from `KEY_TO_MOVE` — 73e565c
 
 ### Phase 4: Component tests (targeted)
 
 #### Automated
 
-- [ ] 4.1 Component specs pass under jsdom: `npm test`
-- [ ] 4.2 Linting passes: `npm run lint`
-- [ ] 4.3 Build unaffected: `npm run build`
+- [x] 4.1 Component specs pass under jsdom: `npm test`
+- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.3 Build unaffected: `npm run build`
 
 #### Manual
 
-- [ ] 4.4 Component tests run without pulling `astro:env`/Supabase into the graph
-- [ ] 4.5 Removing the `w` sentinel handling fails the modifier test
+- [x] 4.4 Component tests run without pulling `astro:env`/Supabase into the graph
+- [x] 4.5 Removing the `w` sentinel handling fails the modifier test
 
 ### Phase 5: Cookbook + close
 
