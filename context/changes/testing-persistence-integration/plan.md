@@ -493,20 +493,20 @@ that a local Supabase with the existing migration + seed is available for the in
 
 #### Automated
 
-- [x] 2.1 New seam spec passes: `npm test`
-- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 New seam spec passes: `npm test` — 246bce9
+- [x] 2.2 Linting passes: `npm run lint` — 246bce9
 
 #### Manual
 
-- [x] 2.3 Reviewer confirms each case asserts the seam result/log, not a mirror
+- [x] 2.3 Reviewer confirms each case asserts the seam result/log, not a mirror — 246bce9
 
 ### Phase 3: Integration harness (node config + helpers)
 
 #### Automated
 
 - [ ] 3.1 Smoke passes with local stack + `.env.test`: `npm run test:integration`
-- [ ] 3.2 Default fast suite unaffected: `npm test`
-- [ ] 3.3 Linting passes: `npm run lint`
+- [x] 3.2 Default fast suite unaffected: `npm test`
+- [x] 3.3 Linting passes: `npm run lint`
 
 #### Manual
 
