@@ -555,10 +555,10 @@ impact; the endpoint's external behavior is unchanged. No deployment or data mig
 
 #### Automated
 
-- [x] 5.1 Full suite still green: `npm test`
-- [x] 5.2 Lint + build pass: `npm run lint` && `npm run build`
+- [x] 5.1 Full suite still green: `npm test` — 438fd3e
+- [x] 5.2 Lint + build pass: `npm run lint` && `npm run build` — 438fd3e
 
 #### Manual
 
-- [x] 5.3 §6.1/§6.2 actionable (no TBD for unit/component); §3 Phase 1 shows `complete`
-- [x] 5.4 A reader could add a new unit test from §6.1 alone
+- [x] 5.3 §6.1/§6.2 actionable (no TBD for unit/component); §3 Phase 1 shows `complete` — 438fd3e
+- [x] 5.4 A reader could add a new unit test from §6.1 alone — 438fd3e
