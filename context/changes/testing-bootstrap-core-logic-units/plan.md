@@ -542,23 +542,23 @@ impact; the endpoint's external behavior is unchanged. No deployment or data mig
 
 #### Automated
 
-- [x] 4.1 Component specs pass under jsdom: `npm test`
-- [x] 4.2 Linting passes: `npm run lint`
-- [x] 4.3 Build unaffected: `npm run build`
+- [x] 4.1 Component specs pass under jsdom: `npm test` — 24d8fa1
+- [x] 4.2 Linting passes: `npm run lint` — 24d8fa1
+- [x] 4.3 Build unaffected: `npm run build` — 24d8fa1
 
 #### Manual
 
-- [x] 4.4 Component tests run without pulling `astro:env`/Supabase into the graph
-- [x] 4.5 Removing the `w` sentinel handling fails the modifier test
+- [x] 4.4 Component tests run without pulling `astro:env`/Supabase into the graph — 24d8fa1
+- [x] 4.5 Removing the `w` sentinel handling fails the modifier test — 24d8fa1
 
 ### Phase 5: Cookbook + close
 
 #### Automated
 
-- [ ] 5.1 Full suite still green: `npm test`
-- [ ] 5.2 Lint + build pass: `npm run lint` && `npm run build`
+- [x] 5.1 Full suite still green: `npm test`
+- [x] 5.2 Lint + build pass: `npm run lint` && `npm run build`
 
 #### Manual
 
-- [ ] 5.3 §6.1/§6.2 actionable (no TBD for unit/component); §3 Phase 1 shows `complete`
-- [ ] 5.4 A reader could add a new unit test from §6.1 alone
+- [x] 5.3 §6.1/§6.2 actionable (no TBD for unit/component); §3 Phase 1 shows `complete`
+- [x] 5.4 A reader could add a new unit test from §6.1 alone
