@@ -481,24 +481,24 @@ that a local Supabase with the existing migration + seed is available for the in
 
 #### Automated
 
-- [x] 1.1 Type checking + build passes: `npm run build`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Existing unit/component suite still green: `npm test`
+- [x] 1.1 Type checking + build passes: `npm run build` — 096879e
+- [x] 1.2 Linting passes: `npm run lint` — 096879e
+- [x] 1.3 Existing unit/component suite still green: `npm test` — 096879e
 
 #### Manual
 
-- [x] 1.4 Clean + dirty completion via the running app behave exactly as before
+- [x] 1.4 Clean + dirty completion via the running app behave exactly as before — 096879e
 
 ### Phase 2: Hermetic error-branch tests
 
 #### Automated
 
-- [ ] 2.1 New seam spec passes: `npm test`
-- [ ] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 New seam spec passes: `npm test`
+- [x] 2.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 Reviewer confirms each case asserts the seam result/log, not a mirror
+- [x] 2.3 Reviewer confirms each case asserts the seam result/log, not a mirror
 
 ### Phase 3: Integration harness (node config + helpers)
 
