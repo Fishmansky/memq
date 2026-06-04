@@ -516,27 +516,27 @@ impact; the endpoint's external behavior is unchanged. No deployment or data mig
 
 #### Automated
 
-- [x] 2.1 Type checking + linting pass on the refactor: `npm run lint`
-- [x] 2.2 Production build succeeds: `npm run build`
-- [x] 2.3 Existing smoke test still green: `npm test`
+- [x] 2.1 Type checking + linting pass on the refactor: `npm run lint` — ef99ead
+- [x] 2.2 Production build succeeds: `npm run build` — ef99ead
+- [x] 2.3 Existing smoke test still green: `npm test` — ef99ead
 
 #### Manual
 
-- [x] 2.4 Diff confirms the refactor is behavior-neutral
-- [x] 2.5 A manual practice run still records progress / streak
+- [x] 2.4 Diff confirms the refactor is behavior-neutral — ef99ead
+- [x] 2.5 A manual practice run still records progress / streak — ef99ead
 
 ### Phase 3: Pure-unit tests (#3, #4, #5)
 
 #### Automated
 
-- [ ] 3.1 All unit specs pass: `npm test`
-- [ ] 3.2 Linting passes on new test files: `npm run lint`
-- [ ] 3.3 Build unaffected: `npm run build`
+- [x] 3.1 All unit specs pass: `npm test`
+- [x] 3.2 Linting passes on new test files: `npm run lint`
+- [x] 3.3 Build unaffected: `npm run build`
 
 #### Manual
 
-- [ ] 3.4 Broken expected-token fails the reducer test (oracle is independent)
-- [ ] 3.5 Parity test fails if a grid token is removed from `KEY_TO_MOVE`
+- [x] 3.4 Broken expected-token fails the reducer test (oracle is independent)
+- [x] 3.5 Parity test fails if a grid token is removed from `KEY_TO_MOVE`
 
 ### Phase 4: Component tests (targeted)
 
