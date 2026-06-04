@@ -502,28 +502,28 @@ impact; the endpoint's external behavior is unchanged. No deployment or data mig
 
 #### Automated
 
-- [x] 1.1 Dependencies install cleanly: `npm install`
-- [x] 1.2 Test runner executes and smoke test passes: `npm test`
-- [x] 1.3 Linting passes on new config/setup files: `npm run lint`
-- [x] 1.4 Production build is unaffected: `npm run build`
+- [x] 1.1 Dependencies install cleanly: `npm install` — a66fbb6
+- [x] 1.2 Test runner executes and smoke test passes: `npm test` — a66fbb6
+- [x] 1.3 Linting passes on new config/setup files: `npm run lint` — a66fbb6
+- [x] 1.4 Production build is unaffected: `npm run build` — a66fbb6
 
 #### Manual
 
-- [x] 1.5 `npm test` output shows the Vitest runner and a green smoke spec
-- [x] 1.6 No Supabase / `astro:env` import appears in the test run
+- [x] 1.5 `npm test` output shows the Vitest runner and a green smoke spec — a66fbb6
+- [x] 1.6 No Supabase / `astro:env` import appears in the test run — a66fbb6
 
 ### Phase 2: Refactor for testability
 
 #### Automated
 
-- [ ] 2.1 Type checking + linting pass on the refactor: `npm run lint`
-- [ ] 2.2 Production build succeeds: `npm run build`
-- [ ] 2.3 Existing smoke test still green: `npm test`
+- [x] 2.1 Type checking + linting pass on the refactor: `npm run lint`
+- [x] 2.2 Production build succeeds: `npm run build`
+- [x] 2.3 Existing smoke test still green: `npm test`
 
 #### Manual
 
-- [ ] 2.4 Diff confirms the refactor is behavior-neutral
-- [ ] 2.5 A manual practice run still records progress / streak
+- [x] 2.4 Diff confirms the refactor is behavior-neutral
+- [x] 2.5 A manual practice run still records progress / streak
 
 ### Phase 3: Pure-unit tests (#3, #4, #5)
 

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 // --- Key → move lookup table ---------------------------------------------
 // Base moves, shift-prime variants, and two modifier sentinels (w, 2).
-const KEY_TO_MOVE: Record<string, string> = {
+export const KEY_TO_MOVE: Record<string, string> = {
   r: "R",
   "shift+r": "R'",
   u: "U",
@@ -35,14 +35,14 @@ const KEY_TO_MOVE: Record<string, string> = {
 };
 
 // --- Move-grid layouts (col/row are 0-indexed) ---------------------------
-interface GridCell {
+export interface GridCell {
   move: string;
   col: number;
   row: number;
 }
 
 // Side layers: face turns + wide moves, keyboard-cross layout (7 cols).
-const SIDE_GRID: GridCell[] = [
+export const SIDE_GRID: GridCell[] = [
   { move: "U", col: 3, row: 0 },
   { move: "U'", col: 4, row: 0 },
   { move: "u", col: 3, row: 1 },
@@ -70,7 +70,7 @@ const SIDE_GRID: GridCell[] = [
 ];
 
 // Central layers (M, E, S) — cross layout (4 cols).
-const CENTRAL_GRID: GridCell[] = [
+export const CENTRAL_GRID: GridCell[] = [
   { move: "M'", col: 1, row: 0 },
   { move: "E'", col: 0, row: 1 },
   { move: "S'", col: 1, row: 1 },
@@ -80,7 +80,7 @@ const CENTRAL_GRID: GridCell[] = [
 ];
 
 // Cube rotations (x, y, z) — cross layout (4 cols).
-const ROTATION_GRID: GridCell[] = [
+export const ROTATION_GRID: GridCell[] = [
   { move: "x", col: 1, row: 0 },
   { move: "y", col: 0, row: 1 },
   { move: "z'", col: 1, row: 1 },
@@ -90,15 +90,15 @@ const ROTATION_GRID: GridCell[] = [
 ];
 
 // --- State ---------------------------------------------------------------
-type Phase = "idle" | "active" | "submitting" | "complete" | "error";
-type SlotResult = "pending" | "correct" | "wrong";
+export type Phase = "idle" | "active" | "submitting" | "complete" | "error";
+export type SlotResult = "pending" | "correct" | "wrong";
 
-interface SessionResult {
+export interface SessionResult {
   consecutiveClean: number;
   masteryReached: boolean;
 }
 
-interface State {
+export interface State {
   phase: Phase;
   slotResults: SlotResult[];
   currentIndex: number;
@@ -109,7 +109,7 @@ interface State {
   submitError: string | null;
 }
 
-type Action =
+export type Action =
   | { type: "START" }
   | { type: "INPUT_MOVE"; move: string }
   | { type: "TOGGLE_WIDE_MODIFIER" }
@@ -119,7 +119,7 @@ type Action =
   | { type: "SUBMIT_RESULT"; result: SessionResult }
   | { type: "SUBMIT_ERROR"; message: string };
 
-function reducer(state: State, action: Action, tokens: string[]): State {
+export function reducer(state: State, action: Action, tokens: string[]): State {
   switch (action.type) {
     case "START":
       return {
@@ -204,7 +204,7 @@ interface PracticeSessionProps {
   moves: string; // raw moves string from DB, e.g. "R U R' U'"
 }
 
-function parseMoves(moves: string): string[] {
+export function parseMoves(moves: string): string[] {
   return moves.replace(/[()]/g, "").split(" ").filter(Boolean);
 }
 

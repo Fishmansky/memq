@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
+import { computeStreak } from "@/lib/practice/streak";
 
 export const POST: APIRoute = async (context) => {
   const user = context.locals.user;
@@ -87,8 +88,7 @@ export const POST: APIRoute = async (context) => {
 
   const currentClean = masteryResult.data?.consecutive_clean ?? 0;
   const alreadyMastered = masteryResult.data?.mastery_reached ?? false;
-  const newConsecutiveClean = isClean ? currentClean + 1 : 0;
-  const newMasteryReached = alreadyMastered || newConsecutiveClean >= 3;
+  const { newConsecutiveClean, newMasteryReached } = computeStreak(currentClean, alreadyMastered, isClean);
 
   const { error: upsertError } = await supabase.from("algorithm_mastery").upsert(
     {
