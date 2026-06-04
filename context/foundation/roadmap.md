@@ -3,7 +3,7 @@ project: MemQ
 version: 1
 status: draft
 created: 2026-05-25
-updated: 2026-05-29
+updated: 2026-06-01
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -31,8 +31,8 @@ MemQ targets intermediate Rubik's cube learners who can already solve the cube b
 |------|--------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|------------------------|---------------------------------------------------|----------|
 | F-01 | domain-schema-rls              | (foundation) all domain tables and per-user row-level isolation are live; client can read/write domain data                               | —                      | NFR (data isolation)                              | ready    |
 | S-01 | browse-prebuilt-view-algorithm | sign in, land on pre-built algorithm sets within 2 clicks, browse algorithms in any set, open one to read its full move sequence           | F-01                   | FR-001, FR-002, FR-003, FR-006, FR-007            | done     |
-| S-02 | practice-session-core-loop     | start a practice session, input moves via button grid or keyboard, get immediate red/green/yellow slot feedback, see streak counter, get "You're PRO!" on 3rd consecutive clean run | F-01, S-01 | US-01, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013 | done |
-| S-03 | progress-tracking              | view total sessions completed globally (persists across browser sessions)                                                                  | S-02                   | FR-014                                            | proposed |
+| S-02 | practice-session-core-loop     | start a practice session, input moves via button grid or keyboard, get immediate red/green/yellow slot feedback, see streak counter, get "You're PRO!" on 3rd consecutive clean run | F-01, S-01 | US-01, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013 | done     |
+| S-03 | progress-tracking              | view total sessions completed globally (persists across browser sessions)                                                                  | S-02                   | FR-014                                            | ready    |
 | S-04 | custom-list-algorithm-entry    | create a custom algorithm list, add algorithms by name + move sequence, and receive a duplicate-detection prompt when the sequence matches an existing algorithm | F-01 | FR-004, FR-005, FR-015 | proposed |
 
 ## Streams
@@ -41,7 +41,7 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 | Stream | Theme              | Chain                              | Note                                                                                    |
 |--------|--------------------|------------------------------------|-----------------------------------------------------------------------------------------|
-| A      | Core practice loop | `F-01` → `S-01` → `S-02` → `S-03` | North star path; blocked at S-01 until pre-built content decision resolves (Open Q 1).  |
+| A      | Core practice loop | `F-01` → `S-01` → `S-02` → `S-03` | North star proven (S-02 done). S-01 content decision resolved (Open Q 1). S-03 next — ready. |
 | B      | Custom content     | `S-04`                             | Parallel with S-01 after F-01; independent track with no content-curation dependency.   |
 
 ## Baseline
@@ -97,6 +97,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Move validation latency: client-side DOM comparison must stay under 100 ms per NFR; verify on the Cloudflare Workers runtime before considering this slice done. — Owner: user. Block: no.
 - **Risk:** The dual-input model (button grid + keyboard shortcuts, FR-009) is the most non-trivial UI component in the MVP. With `main_goal: speed`, ship the grid first; keyboard shortcuts can follow in the same slice but are scoped last. Both are must-have per PRD.
+- **Follow-up:** `moves-grid-update` (open) — rework grid layout; some buttons too small/misplaced. UI polish on the delivered slice, tracked as its own change.
 - **Status:** done
 
 ### S-03: Progress tracking
@@ -109,7 +110,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Smallest slice; depends entirely on session recording from S-02 being correct. Low implementation risk. Sequenced last in Stream A.
-- **Status:** proposed
+- **Status:** ready (S-02 prerequisite delivered)
 
 ### S-04: Custom list creation + algorithm addition + duplicate detection
 
@@ -130,8 +131,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 |------------|--------------------------------|--------------------------------------------------------------|-----------------------|---------------------------------------------------------------------------------------|
 | F-01       | domain-schema-rls              | Domain schema + Supabase RLS for MemQ                        | yes                   | Run `/10x-plan domain-schema-rls`; must complete before any domain slice              |
 | S-01       | browse-prebuilt-view-algorithm | Browse pre-built algorithm sets + view algorithm             | yes                   | Content seeded in supabase/algos_seed.sql; run `/10x-plan browse-prebuilt-view-algorithm` |
-| S-02       | practice-session-core-loop     | Practice session core loop (move input + feedback + streak)  | no                    | Proposed; depends on S-01                                                             |
-| S-03       | progress-tracking              | Progress tracking — total sessions completed                 | no                    | Proposed; depends on S-02                                                             |
+| S-02       | practice-session-core-loop     | Practice session core loop (move input + feedback + streak)  | done                  | Archived 2026-05-29 → `context/archive/2026-05-28-practice-session-core-loop/`        |
+| S-03       | progress-tracking              | Progress tracking — total sessions completed                 | yes                   | S-02 done; run `/10x-plan progress-tracking`                                          |
 | S-04       | custom-list-algorithm-entry    | Custom algorithm list + algorithm entry + duplicate detection | no                    | Proposed; ready after F-01 — run `/10x-plan custom-list-algorithm-entry` in parallel with S-01 |
 
 ## Open Roadmap Questions
@@ -152,4 +153,4 @@ Answer: pre-built algorithms are stored in supabase/algos_seed.sql - it has been
 (Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose `Change ID` matches the item is archived.)
 
 - **S-01: user can sign in (or sign up), land on a list of pre-built algorithm sets within 2 clicks, browse the algorithms in any set, and open an algorithm to read its full move sequence** — Archived 2026-05-27 → `context/archive/2026-05-27-browse-prebuilt-view-algorithm/`. Lesson: —.
-- **S-02: user can start a practice session for any algorithm, input moves via a button grid or keyboard shortcuts (letters/numbers mapped to grid buttons), receive immediate per-move feedback (wrong move → slot turns red, must input correct move to advance), see all slots turn green on a zero-error attempt or yellow on a completed-with-errors attempt, have the result persisted to their streak counter, and see "You're PRO!" after 3 consecutive mistake-free sessions for the same algorithm** — Archived 2026-05-29 → `context/archive/2026-05-28-practice-session-core-loop/`. Lesson: —.
+- **S-02: user can start a practice session, input moves via button grid or keyboard, get immediate red/green/yellow slot feedback, see streak counter, and "You're PRO!" after 3 consecutive clean runs** — Archived 2026-05-29 → `context/archive/2026-05-28-practice-session-core-loop/`. North star delivered. Lesson: streak UPSERT uses fetch-then-compute-then-upsert (no field-level increment in Supabase); accepted lost-update race for single-user profile. Grid layout polish split into `moves-grid-update`.
