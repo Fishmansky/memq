@@ -1,10 +1,10 @@
 ---
 change_id: testing-bootstrap-core-logic-units
 title: Phase 1 test rollout — bootstrap test runner + core-logic unit tests
-status: impl_reviewed
+status: archived
 created: 2026-06-02
 updated: 2026-06-04
-archived_at: null
+archived_at: 2026-06-04T11:52:36Z
 ---
 
 ## Notes
