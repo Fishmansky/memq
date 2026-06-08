@@ -504,14 +504,14 @@ that a local Supabase with the existing migration + seed is available for the in
 
 #### Automated
 
-- [ ] 3.1 Smoke passes with local stack + `.env.test`: `npm run test:integration`
+- [x] 3.1 Smoke passes with local stack + `.env.test`: `npm run test:integration` — dbccb21
 - [x] 3.2 Default fast suite unaffected: `npm test` — dbccb21
 - [x] 3.3 Linting passes: `npm run lint` — dbccb21
 
 #### Manual
 
-- [x] 3.4 Clean-checkout run via `.env.test.example` runs smoke green
-- [x] 3.5 Missing-env run fails with the explicit guard message
+- [x] 3.4 Clean-checkout run via `.env.test.example` runs smoke green — 389b06a
+- [x] 3.5 Missing-env run fails with the explicit guard message — 389b06a
 
 ### Phase 4: Persistence + streak integration tests (#1, #4)
 
@@ -530,11 +530,11 @@ that a local Supabase with the existing migration + seed is available for the in
 
 #### Automated
 
-- [x] 5.1 No broken references / lint passes: `npm run lint`
-- [x] 5.2 Full default suite green: `npm test`
+- [x] 5.1 No broken references / lint passes: `npm run lint` — 389b06a
+- [x] 5.2 Full default suite green: `npm test` — 389b06a
 
 #### Manual
 
-- [x] 5.3 §6.3/§6.5 read as actionable recipes
-- [x] 5.4 Race note matches the archive acceptance
-- [x] 5.5 §3 Phase 2 status reflects reality
+- [x] 5.3 §6.3/§6.5 read as actionable recipes — 389b06a
+- [x] 5.4 Race note matches the archive acceptance — 389b06a
+- [x] 5.5 §3 Phase 2 status reflects reality — 389b06a

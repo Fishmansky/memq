@@ -1,9 +1,9 @@
 ---
 change_id: testing-persistence-integration
 title: Persistence integration tests for finished-session result and streak count (rollout Phase 2)
-status: implementing
+status: implemented
 created: 2026-06-04
-updated: 2026-06-04
+updated: 2026-06-08
 archived_at: null
 ---
 
