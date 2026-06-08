@@ -510,31 +510,31 @@ that a local Supabase with the existing migration + seed is available for the in
 
 #### Manual
 
-- [ ] 3.4 Clean-checkout run via `.env.test.example` runs smoke green
-- [ ] 3.5 Missing-env run fails with the explicit guard message
+- [x] 3.4 Clean-checkout run via `.env.test.example` runs smoke green
+- [x] 3.5 Missing-env run fails with the explicit guard message
 
 ### Phase 4: Persistence + streak integration tests (#1, #4)
 
 #### Automated
 
-- [x] 4.1 Persistence + streak specs pass: `npm run test:integration`
-- [x] 4.2 Default fast suite unaffected: `npm test`
-- [x] 4.3 Linting passes: `npm run lint`
+- [x] 4.1 Persistence + streak specs pass: `npm run test:integration` — 4888d26
+- [x] 4.2 Default fast suite unaffected: `npm test` — 4888d26
+- [x] 4.3 Linting passes: `npm run lint` — 4888d26
 
 #### Manual
 
-- [x] 4.4 Reviewer confirms read-back assertions (not response body) and FR-013 oracle
-- [x] 4.5 Per-test cleanup leaves no residual rows
+- [x] 4.4 Reviewer confirms read-back assertions (not response body) and FR-013 oracle — 4888d26
+- [x] 4.5 Per-test cleanup leaves no residual rows — 4888d26
 
 ### Phase 5: Cookbook + race documentation + test-plan sync
 
 #### Automated
 
-- [ ] 5.1 No broken references / lint passes: `npm run lint`
-- [ ] 5.2 Full default suite green: `npm test`
+- [x] 5.1 No broken references / lint passes: `npm run lint`
+- [x] 5.2 Full default suite green: `npm test`
 
 #### Manual
 
-- [ ] 5.3 §6.3/§6.5 read as actionable recipes
-- [ ] 5.4 Race note matches the archive acceptance
-- [ ] 5.5 §3 Phase 2 status reflects reality
+- [x] 5.3 §6.3/§6.5 read as actionable recipes
+- [x] 5.4 Race note matches the archive acceptance
+- [x] 5.5 §3 Phase 2 status reflects reality

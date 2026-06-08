@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-02
+> Last updated: 2026-06-08
 
 ## 1. Strategy
 
@@ -72,7 +72,7 @@ orchestrator updates Status as artifacts appear on disk.
 | # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
 |---|------------|-----------------|----------------|------------|--------|---------------|
 | 1 | Bootstrap + core-logic units | Stand up the test runner and prove forced-recall, streak, and grid mapping hold at the logic layer | #3, #4, #5 | unit | complete | context/changes/testing-bootstrap-core-logic-units/ |
-| 2 | Persistence integration | Prove a finished session actually persists and the streak UPSERT updates correctly around the session-complete write path | #1, #4 | integration | not started | — |
+| 2 | Persistence integration | Prove a finished session actually persists and the streak UPSERT updates correctly around the session-complete write path | #1, #4 | integration | complete | context/changes/testing-persistence-integration/ |
 | 3 | Authorization / isolation | Prove no cross-user leak via two-account API + RLS tests | #2 | integration / e2e | not started | — |
 | 4 | Quality-gates wiring | Lock the floor in the existing GitHub Actions CI; e2e on the practice loop; optional selective visual review of slot-color states | cross-cutting | gates, e2e, (optional) AI-native visual | not started | — |
 
@@ -156,13 +156,64 @@ the relevant rollout phase ships; before that, the sub-section reads
 - **Reference test:** `src/components/app/PracticeSession.test.tsx`.
 
 ### 6.3 Adding an integration test
-- TBD — see §3 Phase 2 (session-complete write path + DB read-back; two-account authorization in §3 Phase 3).
+- **Location & naming:** `src/test/integration/*.int.test.ts`. The `.int.test.ts`
+  suffix is what the dedicated config matches — a plain `.test.ts` here would be
+  picked up by the fast jsdom suite instead and crash on the node-only client.
+- **Config & runner:** node-env `vitest.config.integration.ts` (separate from the
+  jsdom `vitest.config.ts` and from `astro.config.mjs`, so neither the
+  Cloudflare/SSR adapter nor `astro:env` enters the graph). Run with
+  `npm run test:integration` — **not** part of `npm test`. Requires a local
+  Supabase stack (`npx supabase start`) and a `.env.test` (copy `.env.test.example`).
+- **Credentials (safety):** the config injects ONLY keys read from `.env.test`
+  (a hand-rolled loader, deliberately not Vite's `loadEnv`, so the destructive
+  setup/teardown can never run against the dev/cloud DB in `.env`). Missing keys
+  trip a loud guard in `src/test/integration/setup.ts` — the suite fails clearly,
+  not silently.
+- **Two client roles (`src/test/integration/db.ts`):** an **authed-user** client
+  (anon key + signed-in throwaway user) drives the RLS-governed write path the
+  endpoint actually uses; a **service-role** client (bypasses RLS) does fixture
+  setup/teardown and the independent **read-back**. Both built directly from
+  `@supabase/supabase-js` + `process.env` — NEVER from the app's `@/lib/supabase`
+  (it imports `astro:env/server`, unresolvable under node).
+- **Seam, not the route:** import the node-importable seam
+  (`@/lib/practice/completePractice`), not the Astro endpoint — the route is a thin
+  `astro:env`-bound wrapper that won't load under node.
+- **Fixtures & cleanup:** `createTestUser` / `deleteTestUser`; `cleanupUserRows`
+  (deletes the user's `practice_sessions` + `algorithm_mastery`, leaves seed
+  algorithms intact); `getSeededAlgorithmIds` discovers seeded UUIDs at runtime.
+  `afterEach` → `cleanupUserRows`, `afterAll` → `deleteTestUser`. Per-test cleanup
+  is cheaper than `supabase db reset` and keeps seed data.
+- **Reference tests:** `src/test/integration/persistence.int.test.ts` (read-back),
+  `src/test/integration/streak.int.test.ts` (streak round-trip),
+  `src/test/integration/smoke.int.test.ts` (connectivity).
+- Two-account authorization / RLS isolation is §3 Phase 3, not covered here.
 
 ### 6.4 Adding an e2e test
 - TBD — see §3 Phase 4 (critical practice-loop flow).
 
 ### 6.5 Adding a test for a new API endpoint
-- TBD — see §3 Phase 2 (assert request → response shape AND the persisted side-effect; never trust the client-submitted outcome).
+- **Extract a seam first.** An Astro endpoint that imports `astro:env` can't load
+  under node. Lift its logic into a node-importable function that takes an
+  **injected** Supabase client and returns a structured result the route maps to a
+  `Response` (pattern: `src/lib/practice/completePractice.ts`, returning
+  `{ status; body }`). The route keeps the auth gate, body parse/validate, and the
+  `astro:env`-bound `createClient`, then delegates. Keep the refactor
+  behavior-neutral (same status codes, JSON bodies, `console.error` lines).
+- **Assert the request→result AND the persisted side-effect — never the body
+  alone.** A 200 (or the returned object) is computed in memory and lies about
+  whether the write landed. Drive the seam with the authed-user client, then prove
+  the effect with an independent service-role **read-back** of the written rows.
+  See `persistence.int.test.ts`: it checks `result.status` only as a non-error
+  guard and asserts the persisted `practice_sessions` / `algorithm_mastery` rows.
+- **Never trust a client-submitted outcome** as the oracle (forging it is the §7
+  abuse surface). Expected values come from the spec (PRD), hand-written — not from
+  the compute function under test (tautology).
+- **Failure branches a real DB won't trigger on demand** (a mid-sequence read or
+  upsert error in a non-atomic sequence) go in a **hermetic** unit test driving the
+  seam with a stub client under the jsdom suite — not an integration test that would
+  have to force a mid-sequence error. Reference:
+  `src/lib/practice/completePractice.test.ts`. Real-constraint branches (FK,
+  unique-key upsert, defaults) go in the integration suite where a stub would lie.
 
 ### 6.6 Per-rollout-phase notes
 - **Phase 1 — Bootstrap + core-logic units (2026-06-04).** Stood up the project's
@@ -176,6 +227,27 @@ the relevant rollout phase ships; before that, the sub-section reads
   extracted to pure `src/lib/practice/streak.ts` (`computeStreak`), called by
   `complete.ts`. Covered risks #3/#4/#5 with pure-unit tests + targeted component
   tests; CI test-step wiring is deferred to §3 Phase 4.
+- **Phase 2 — Persistence integration (2026-06-08).** Covered risks #1 and #4 at
+  the integration layer. A behavior-neutral seam refactor lifted the
+  `POST /api/practice/complete` body into node-importable
+  `src/lib/practice/completePractice.ts` (injected Supabase client, no `astro:env`);
+  the route is now a thin wrapper. Two test layers by cost × signal: **hermetic**
+  stubs (`completePractice.test.ts`, jsdom suite) for the two `500` branches a real
+  DB won't trigger on demand (mastery-read error, upsert error) + the `23503`→`400`
+  branch; **integration** (`*.int.test.ts`, node-env `vitest.config.integration.ts`,
+  `npm run test:integration` against a local Supabase) for the persistence
+  read-back (#1) and streak round-trip (#4) — proofs a stub would lie about. Added
+  the two-client strategy (authed-user vs service-role) and per-test row cleanup in
+  `src/test/integration/db.ts`; cookbook §6.3/§6.5 capture the pattern. **Documented,
+  not tested — the fetch-then-compute-then-upsert race** (`completePractice.ts`
+  doc-comment): benign/corrective under the only realistic single-user trigger (a
+  fast double-submit of the SAME session yields the correct +1; an atomic fix would
+  overcount), a genuine undercount only for rare concurrent *distinct* runs
+  (two devices), and `mastery_reached` is monotonic so PRO is never revoked. A
+  forced-interleave test would pin a near-theoretical outcome and add flake; revisit
+  with an atomic Postgres RPC only if multi-device streak accuracy ever matters. See
+  `context/archive/2026-05-28-practice-session-core-loop/`. Integration suite stays
+  opt-in (local stack), not on the per-commit path; CI wiring is §3 Phase 4.
 
 ## 7. What We Deliberately Don't Test
 
