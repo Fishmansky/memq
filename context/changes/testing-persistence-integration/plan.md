@@ -505,8 +505,8 @@ that a local Supabase with the existing migration + seed is available for the in
 #### Automated
 
 - [ ] 3.1 Smoke passes with local stack + `.env.test`: `npm run test:integration`
-- [x] 3.2 Default fast suite unaffected: `npm test`
-- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.2 Default fast suite unaffected: `npm test` — dbccb21
+- [x] 3.3 Linting passes: `npm run lint` — dbccb21
 
 #### Manual
 
@@ -517,14 +517,14 @@ that a local Supabase with the existing migration + seed is available for the in
 
 #### Automated
 
-- [ ] 4.1 Persistence + streak specs pass: `npm run test:integration`
-- [ ] 4.2 Default fast suite unaffected: `npm test`
-- [ ] 4.3 Linting passes: `npm run lint`
+- [x] 4.1 Persistence + streak specs pass: `npm run test:integration`
+- [x] 4.2 Default fast suite unaffected: `npm test`
+- [x] 4.3 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 4.4 Reviewer confirms read-back assertions (not response body) and FR-013 oracle
-- [ ] 4.5 Per-test cleanup leaves no residual rows
+- [x] 4.4 Reviewer confirms read-back assertions (not response body) and FR-013 oracle
+- [x] 4.5 Per-test cleanup leaves no residual rows
 
 ### Phase 5: Cookbook + race documentation + test-plan sync
 
