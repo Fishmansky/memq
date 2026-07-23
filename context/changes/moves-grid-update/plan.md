@@ -360,10 +360,10 @@ None — no data model or persisted-state changes.
 
 #### Automated
 
-- [x] 2.1 New spec passes: `npm run test:e2e -- moves-grid-rework`
-- [x] 2.2 Full E2E suite still passes: `npm run test:e2e`
-- [x] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 New spec passes: `npm run test:e2e -- moves-grid-rework` — 5bc4176
+- [x] 2.2 Full E2E suite still passes: `npm run test:e2e` — 5bc4176
+- [x] 2.3 Lint passes: `npm run lint` — 5bc4176
 
 #### Manual
 
-- [x] 2.4 Spec run observed at least once locally against the real preview server
+- [x] 2.4 Spec run observed at least once locally against the real preview server — 5bc4176
