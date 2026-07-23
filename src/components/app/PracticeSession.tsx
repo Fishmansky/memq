@@ -35,58 +35,67 @@ export const KEY_TO_MOVE: Record<string, string> = {
 };
 
 // --- Move-grid layouts (col/row are 0-indexed) ---------------------------
+export type NotchCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
+
 export interface GridCell {
   move: string;
   col: number;
   row: number;
+  colSpan?: number;
+  rowSpan?: number;
+  // Which quadrant to clip away so a smaller notch button (placed at that
+  // quadrant, later in the array) visually carves an L out of this cell.
+  notch?: NotchCorner;
 }
 
-// Side layers: face turns + wide moves, keyboard-cross layout (7 cols).
+// Side layers: face turns + wide moves, keyboard-cross layout (8 cols).
+// Array order is load-bearing: F/F'/B/B' big buttons must precede their
+// notch cell (f/f'/b/b') so the notch paints on top and stays clickable.
 export const SIDE_GRID: GridCell[] = [
   { move: "U", col: 3, row: 0 },
   { move: "U'", col: 4, row: 0 },
   { move: "u", col: 3, row: 1 },
   { move: "u'", col: 4, row: 1 },
-  { move: "L'", col: 0, row: 2 },
-  { move: "l'", col: 1, row: 2 },
-  { move: "F'", col: 2, row: 2 },
-  { move: "F", col: 4, row: 2 },
-  { move: "r", col: 5, row: 2 },
-  { move: "R", col: 6, row: 2 },
-  { move: "f'", col: 2, row: 3 },
-  { move: "f", col: 3, row: 3 },
-  { move: "b", col: 2, row: 4 },
-  { move: "b'", col: 3, row: 4 },
-  { move: "L", col: 0, row: 5 },
-  { move: "l", col: 1, row: 5 },
-  { move: "B", col: 2, row: 5 },
-  { move: "B'", col: 4, row: 5 },
-  { move: "r'", col: 5, row: 5 },
-  { move: "R'", col: 6, row: 5 },
+  { move: "F'", col: 2, row: 2, colSpan: 2, rowSpan: 2, notch: "bottom-right" },
+  { move: "F", col: 4, row: 2, colSpan: 2, rowSpan: 2, notch: "bottom-left" },
+  { move: "L'", col: 0, row: 3 },
+  { move: "l'", col: 1, row: 3 },
+  { move: "f'", col: 3, row: 3 },
+  { move: "f", col: 4, row: 3 },
+  { move: "r", col: 6, row: 3 },
+  { move: "R", col: 7, row: 3 },
+  { move: "L", col: 0, row: 4 },
+  { move: "l", col: 1, row: 4 },
+  { move: "B", col: 2, row: 4, colSpan: 2, rowSpan: 2, notch: "top-right" },
+  { move: "b", col: 3, row: 4 },
+  { move: "B'", col: 4, row: 4, colSpan: 2, rowSpan: 2, notch: "top-left" },
+  { move: "b'", col: 4, row: 4 },
+  { move: "r'", col: 6, row: 4 },
+  { move: "R'", col: 7, row: 4 },
   { move: "d'", col: 3, row: 6 },
   { move: "d", col: 4, row: 6 },
   { move: "D'", col: 3, row: 7 },
   { move: "D", col: 4, row: 7 },
 ];
 
-// Central layers (M, E, S) — cross layout (4 cols).
+// Central layers (M, E, S) — cross layout (6 cols).
 export const CENTRAL_GRID: GridCell[] = [
-  { move: "M'", col: 1, row: 0 },
-  { move: "E'", col: 0, row: 1 },
-  { move: "S'", col: 1, row: 1 },
-  { move: "S", col: 2, row: 1 },
-  { move: "E", col: 3, row: 1 },
-  { move: "M", col: 1, row: 2 },
+  { move: "M'", col: 2, row: 0, colSpan: 2 },
+  { move: "E'", col: 0, row: 1, colSpan: 2 },
+  { move: "S'", col: 2, row: 1 },
+  { move: "S", col: 3, row: 1 },
+  { move: "E", col: 4, row: 1, colSpan: 2 },
+  { move: "M", col: 2, row: 2, colSpan: 2 },
 ];
 
-// Cube rotations (x, y, z) — cross layout (4 cols).
+// Cube rotations (x, y, z) — cross layout (6 cols).
 export const ROTATION_GRID: GridCell[] = [
-  { move: "x", col: 1, row: 0 },
-  { move: "y", col: 0, row: 1 },
-  { move: "z'", col: 1, row: 1 },
-  { move: "z", col: 2, row: 1 },
-  { move: "y'", col: 3, row: 1 },
-  { move: "x'", col: 1, row: 2 },
+  { move: "x", col: 2, row: 0, colSpan: 2 },
+  { move: "y", col: 0, row: 1, colSpan: 2 },
+  { move: "z'", col: 2, row: 1 },
+  { move: "z", col: 3, row: 1 },
+  { move: "y'", col: 4, row: 1, colSpan: 2 },
+  { move: "x'", col: 2, row: 2, colSpan: 2 },
 ];
 
 // --- State ---------------------------------------------------------------
@@ -209,9 +218,34 @@ export function parseMoves(moves: string): string[] {
 }
 
 // --- Move grid -----------------------------------------------------------
+// A notched big button's box is cut along the exact midline of its span so
+// the smaller notch button (rendered after it, same quadrant) reads as a
+// carved-out corner instead of an overlapping badge.
+const NOTCH_CLIP_PATH: Record<NotchCorner, string> = {
+  "top-left": "polygon(50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 50%, 50% 50%)",
+  "top-right": "polygon(0% 0%, 50% 0%, 50% 50%, 100% 50%, 100% 100%, 0% 100%)",
+  "bottom-left": "polygon(0% 0%, 100% 0%, 100% 100%, 50% 100%, 50% 50%, 0% 50%)",
+  "bottom-right": "polygon(0% 0%, 100% 0%, 100% 50%, 50% 50%, 50% 100%, 0% 100%)",
+};
+
+// Pull the label toward the corner diagonally opposite the notch, since the
+// box's own center sits exactly on the notch's cut corner.
+const NOTCH_LABEL_ALIGN: Record<NotchCorner, string> = {
+  "top-left": "items-end justify-end",
+  "top-right": "items-end justify-start",
+  "bottom-left": "items-start justify-end",
+  "bottom-right": "items-start justify-start",
+};
+
 function MoveGrid({ cells, columns, onMove }: { cells: GridCell[]; columns: number; onMove: (m: string) => void }) {
   return (
-    <div className="grid gap-1.5" style={{ gridTemplateColumns: `repeat(${String(columns)}, minmax(2.5rem, 1fr))` }}>
+    <div
+      className="grid gap-1.5"
+      style={{
+        gridTemplateColumns: `repeat(${String(columns)}, minmax(2.5rem, 1fr))`,
+        gridAutoRows: "minmax(2.5rem, auto)",
+      }}
+    >
       {cells.map((cell) => (
         <button
           key={`${cell.move}-${String(cell.col)}-${String(cell.row)}`}
@@ -219,8 +253,15 @@ function MoveGrid({ cells, columns, onMove }: { cells: GridCell[]; columns: numb
           onClick={() => {
             onMove(cell.move);
           }}
-          style={{ gridColumnStart: cell.col + 1, gridRowStart: cell.row + 1 }}
-          className="rounded border border-white/20 bg-white/10 px-2 py-1 font-mono text-sm text-white transition-colors hover:bg-white/20"
+          style={{
+            gridColumn: `${String(cell.col + 1)} / span ${String(cell.colSpan ?? 1)}`,
+            gridRow: `${String(cell.row + 1)} / span ${String(cell.rowSpan ?? 1)}`,
+            clipPath: cell.notch ? NOTCH_CLIP_PATH[cell.notch] : undefined,
+          }}
+          className={cn(
+            "flex h-full w-full rounded border border-white/20 bg-white/10 px-2 py-1 font-mono text-sm text-white transition-colors hover:bg-white/20",
+            cell.notch ? NOTCH_LABEL_ALIGN[cell.notch] : "items-center justify-center",
+          )}
         >
           {cell.move}
         </button>
@@ -433,10 +474,14 @@ export default function PracticeSession({ algorithmId, moves }: PracticeSessionP
             </button>
           </div>
 
-          <div className="flex flex-wrap gap-6">
-            <MoveGrid cells={SIDE_GRID} columns={7} onMove={dispatchMove} />
-            <MoveGrid cells={CENTRAL_GRID} columns={4} onMove={dispatchMove} />
-            <MoveGrid cells={ROTATION_GRID} columns={4} onMove={dispatchMove} />
+          <div className="space-y-6">
+            <div className="flex flex-wrap justify-between gap-6">
+              <MoveGrid cells={SIDE_GRID} columns={8} onMove={dispatchMove} />
+              <MoveGrid cells={CENTRAL_GRID} columns={6} onMove={dispatchMove} />
+            </div>
+            <div className="flex justify-center">
+              <MoveGrid cells={ROTATION_GRID} columns={6} onMove={dispatchMove} />
+            </div>
           </div>
         </div>
       )}

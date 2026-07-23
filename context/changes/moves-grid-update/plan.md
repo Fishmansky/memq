@@ -346,15 +346,15 @@ None — no data model or persisted-state changes.
 
 #### Automated
 
-- [ ] 1.1 Lint passes: `npm run lint`
-- [ ] 1.2 Build passes: `npm run build`
-- [ ] 1.3 Existing unit tests pass unchanged: `npm run test`
+- [x] 1.1 Lint passes: `npm run lint`
+- [x] 1.2 Build passes: `npm run build`
+- [x] 1.3 Existing unit tests pass unchanged: `npm run test`
 
 #### Manual
 
-- [ ] 1.4 Side/Central/Rotation grids visually match `change.md`'s sketches
-- [ ] 1.5 `F`/`F'`/`B`/`B'` big-button + notch click behavior correct
-- [ ] 1.6 No regression in keyboard input during a manual practice run
+- [x] 1.4 Side/Central/Rotation grids visually match `change.md`'s sketches
+- [x] 1.5 `F`/`F'`/`B`/`B'` big-button + notch click behavior correct
+- [x] 1.6 No regression in keyboard input during a manual practice run
 
 ### Phase 2: E2E regression test for the reworked grid
 
