@@ -346,24 +346,24 @@ None — no data model or persisted-state changes.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
-- [x] 1.3 Existing unit tests pass unchanged: `npm run test`
+- [x] 1.1 Lint passes: `npm run lint` — 56cd494
+- [x] 1.2 Build passes: `npm run build` — 56cd494
+- [x] 1.3 Existing unit tests pass unchanged: `npm run test` — 56cd494
 
 #### Manual
 
-- [x] 1.4 Side/Central/Rotation grids visually match `change.md`'s sketches
-- [x] 1.5 `F`/`F'`/`B`/`B'` big-button + notch click behavior correct
-- [x] 1.6 No regression in keyboard input during a manual practice run
+- [x] 1.4 Side/Central/Rotation grids visually match `change.md`'s sketches — 56cd494
+- [x] 1.5 `F`/`F'`/`B`/`B'` big-button + notch click behavior correct — 56cd494
+- [x] 1.6 No regression in keyboard input during a manual practice run — 56cd494
 
 ### Phase 2: E2E regression test for the reworked grid
 
 #### Automated
 
-- [ ] 2.1 New spec passes: `npm run test:e2e -- moves-grid-rework`
-- [ ] 2.2 Full E2E suite still passes: `npm run test:e2e`
-- [ ] 2.3 Lint passes: `npm run lint`
+- [x] 2.1 New spec passes: `npm run test:e2e -- moves-grid-rework`
+- [x] 2.2 Full E2E suite still passes: `npm run test:e2e`
+- [x] 2.3 Lint passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.4 Spec run observed at least once locally against the real preview server
+- [x] 2.4 Spec run observed at least once locally against the real preview server
