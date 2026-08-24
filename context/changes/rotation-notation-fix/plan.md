@@ -426,20 +426,20 @@ header comment should say so explicitly for whoever finds it next.
 
 #### Automated
 
-- [x] 3.1 `grep -c "2''" supabase/fixes/2026-08-24-rotation-notation.sql` returns `0`
-- [x] 3.2 Phase 1's spec now passes: `npx playwright test rotation-notation-fix.spec.ts`
+- [x] 3.1 `grep -c "2''" supabase/fixes/2026-08-24-rotation-notation.sql` returns `0` — 887a32e
+- [x] 3.2 Phase 1's spec now passes: `npx playwright test rotation-notation-fix.spec.ts` — 887a32e
 
 #### Manual
 
-- [x] 3.3 7 `UPDATE` statements executed against the live Supabase project via Studio SQL Editor
-- [x] 3.4 Read-back `SELECT` confirms all 7 rows corrected, no `2'` substring remaining
-- [x] 3.5 `public.algorithms` row count unchanged before/after
+- [x] 3.3 7 `UPDATE` statements executed against the live Supabase project via Studio SQL Editor — 887a32e
+- [x] 3.4 Read-back `SELECT` confirms all 7 rows corrected, no `2'` substring remaining — 887a32e
+- [x] 3.5 `public.algorithms` row count unchanged before/after — 887a32e
 
 ### Phase 4: Regression guard over real seed content
 
 #### Automated
 
-- [ ] 4.1 New seed-content test fails pre-fix, passes post-fix: `npm test`
-- [ ] 4.2 Existing parity test still passes after refactor: `npm test`
-- [ ] 4.3 Type checking passes: `npx astro check`
-- [ ] 4.4 Linting passes: `npm run lint`
+- [x] 4.1 New seed-content test fails pre-fix, passes post-fix: `npm test`
+- [x] 4.2 Existing parity test still passes after refactor: `npm test`
+- [x] 4.3 Type checking passes: `npx astro check`
+- [x] 4.4 Linting passes: `npm run lint`
