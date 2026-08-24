@@ -439,7 +439,7 @@ header comment should say so explicitly for whoever finds it next.
 
 #### Automated
 
-- [x] 4.1 New seed-content test fails pre-fix, passes post-fix: `npm test`
-- [x] 4.2 Existing parity test still passes after refactor: `npm test`
-- [x] 4.3 Type checking passes: `npx astro check`
-- [x] 4.4 Linting passes: `npm run lint`
+- [x] 4.1 New seed-content test fails pre-fix, passes post-fix: `npm test` — f1d694c
+- [x] 4.2 Existing parity test still passes after refactor: `npm test` — f1d694c
+- [x] 4.3 Type checking passes: `npx astro check` — f1d694c
+- [x] 4.4 Linting passes: `npm run lint` — f1d694c
