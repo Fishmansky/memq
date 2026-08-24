@@ -405,22 +405,22 @@ header comment should say so explicitly for whoever finds it next.
 
 #### Automated
 
-- [x] 1.1 Spec run confirms failure today: `npx playwright test rotation-notation-fix.spec.ts` exits non-zero
+- [x] 1.1 Spec run confirms failure today: `npx playwright test rotation-notation-fix.spec.ts` exits non-zero — e6d9f20
 
 #### Manual
 
-- [x] 1.2 Failure confirmed as the right one (stalls at the `U2` step, not an unrelated error)
+- [x] 1.2 Failure confirmed as the right one (stalls at the `U2` step, not an unrelated error) — e6d9f20
 
 ### Phase 2: Fix seed source file
 
 #### Automated
 
-- [ ] 2.1 `grep -c "2''" supabase/algos_seed.sql` returns `0`
-- [ ] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 `grep -c "2''" supabase/algos_seed.sql` returns `0`
+- [x] 2.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 Diff review confirms only the 8 targeted tokens changed
+- [x] 2.3 Diff review confirms only the 8 targeted tokens changed
 
 ### Phase 3: Corrective SQL for the live database — confirm green
 
