@@ -90,23 +90,21 @@ spanned) cell instead of shrinking to its padding.
 
 The four L-shaped buttons (`F`, `F'`, `B`, `B'`) are implemented as one
 `<button>` whose grid area is the full 2×2 bounding box; the notch move
-(`f`/`f'`/`b`/`b'`) is a separate, later `<button>` placed at the single
-notched cell. Normal DOM/paint order (later element on top) is what carves
-the visual L and keeps the notch independently clickable — no `clip-path` or
-`z-index` needed. This means **array order is load-bearing**: each big
-button's entry must appear before its notch cell's entry.
+(`f`/`f'`/`b`/`b'`) is a separate `<button>` placed at the single notched
+cell. Each big button carries an optional `notch?: NotchCorner` field that
+drives a `NOTCH_CLIP_PATH` lookup, applied as a CSS `clip-path` on the big
+button to geometrically remove its notch quadrant's hit-area — this is what
+carves the visual L and keeps the notch independently clickable, regardless
+of DOM/array order.
 
 ## Critical Implementation Details
 
-**Array order for overlapping cells.** `SIDE_GRID`'s big buttons (`F'`, `F`,
-`B`, `B'`) each share their bounding box's top-left grid cell with... no —
-more precisely, each big button's box fully covers its notch cell too. Since
-CSS grid items paint in DOM/array order when they overlap, the notch cell
-(`f'`, `f`, `b`, `b'`) MUST be listed after its corresponding big button in
-the literal array, or the notch button will render underneath and become
-unclickable. `B'` is the trickiest case: its bounding box starts at the exact
-same `(col, row)` as its own notch cell `b'` — list `B'` first regardless of
-any left-to-right reading-order instinct.
+**Notch carving via clip-path.** `SIDE_GRID`'s big buttons (`F'`, `F`, `B`,
+`B'`) each fully cover their notch cell's bounding box. Rather than relying
+on paint order, each big button's `notch` field clips away the quadrant
+where its notch cell (`f'`, `f`, `b`, `b'`) sits, so the notch button is
+never actually covered and stays clickable no matter where it appears in
+the array.
 
 ## Phase 1: Grid layout rework
 

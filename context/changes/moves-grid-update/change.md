@@ -1,7 +1,7 @@
 ---
 change_id: moves-grid-update
 title: Rework moves grid layout — fix small and misplaced buttons
-status: implemented
+status: impl_reviewed
 created: 2026-05-29
 updated: 2026-07-23
 archived_at: null

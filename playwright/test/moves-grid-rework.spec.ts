@@ -4,15 +4,14 @@
 //   keyboard shortcut maps to the wrong move token; a layout rework remaps
 //   keys." The moves-grid-update rework (context/changes/moves-grid-update)
 //   made F/F'/B/B' L-shaped 2x2 buttons with f/f'/b/b' notched into their
-//   corner via DOM paint order (no clip-path/z-index) — a risk that only
-//   exists in the rendered UI: if the notch button rendered underneath the
-//   big button, clicking it would activate the wrong move (or nothing).
+//   corner via a `notch`-driven CSS clip-path on the big button — a risk
+//   that only exists in the rendered UI: if a move token got mis-mapped to
+//   the wrong button, clicking it would activate the wrong move (or nothing).
 // Protection proof: drive a real algorithm ("OLL 3") whose move sequence
 //   hits both new big buttons (F, F') and their notch neighbors (f, f') in
-//   order; each click targets its move by exact accessible name. If a notch
-//   click actually activated the big button underneath, the reducer would
-//   see the wrong token and the run would end dirty (or stall) instead of
-//   reaching the clean-run banner.
+//   order; each click targets its move by exact accessible name. If a move
+//   token were mis-mapped, the reducer would see the wrong token and the
+//   run would end dirty (or stall) instead of reaching the clean-run banner.
 // Seed/levers: playwright/test/seed.spec.ts + playwright/test/E2E_RULES.md.
 // Boundaries: auth, routing, API, and DB all REAL; nothing mocked. Auth via
 //   shared storageState (playwright.config.ts).
