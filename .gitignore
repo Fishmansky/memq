@@ -18,6 +18,7 @@ pnpm-debug.log*
 .env.production
 .env.test
 .env.test.local
+.env.e2e
 
 # cloudflare
 .dev.vars
@@ -31,5 +32,11 @@ pnpm-debug.log*
 
 # AI
 CLAUDE.md.scaffold
-.claude/
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
+.claude/skills/
+.claude/.10x-cli-manifest.json
 .agents/
+
+# Playwright
+playwright/.auth

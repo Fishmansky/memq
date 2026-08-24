@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | grep -E '\\.(ts|tsx|js|jsx|mjs|cjs|astro)$' | xargs -r npx eslint --fix --quiet",
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "command": "jq -r '.tool_input.file_path // empty' | grep -E '\\.(ts|tsx)$' | xargs -r npx vitest related --run",
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "command": "npx tsc --noEmit",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

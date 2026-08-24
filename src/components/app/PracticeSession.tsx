@@ -134,7 +134,7 @@ export function reducer(state: State, action: Action, tokens: string[]): State {
       return {
         ...state,
         phase: "active",
-        slotResults: tokens.map(() => "pending"),
+        slotResults: tokens.map((): SlotResult => "pending"),
         currentIndex: 0,
         errorCount: 0,
         result: null,
@@ -187,7 +187,7 @@ export function reducer(state: State, action: Action, tokens: string[]): State {
       return {
         ...state,
         phase: "idle",
-        slotResults: tokens.map(() => "pending"),
+        slotResults: tokens.map((): SlotResult => "pending"),
         currentIndex: 0,
         errorCount: 0,
         result: null,
@@ -275,7 +275,7 @@ export default function PracticeSession({ algorithmId, moves }: PracticeSessionP
 
   const [state, dispatch] = useReducer((s: State, a: Action) => reducer(s, a, tokens), {
     phase: "idle",
-    slotResults: tokens.map(() => "pending"),
+    slotResults: tokens.map((): SlotResult => "pending"),
     currentIndex: 0,
     errorCount: 0,
     result: null,
