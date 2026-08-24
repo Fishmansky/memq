@@ -415,25 +415,25 @@ header comment should say so explicitly for whoever finds it next.
 
 #### Automated
 
-- [x] 2.1 `grep -c "2''" supabase/algos_seed.sql` returns `0`
-- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 `grep -c "2''" supabase/algos_seed.sql` returns `0` — 867992b
+- [x] 2.2 Linting passes: `npm run lint` — 867992b
 
 #### Manual
 
-- [x] 2.3 Diff review confirms only the 8 targeted tokens changed
+- [x] 2.3 Diff review confirms only the 8 targeted tokens changed — 867992b
 
 ### Phase 3: Corrective SQL for the live database — confirm green
 
 #### Automated
 
-- [ ] 3.1 `grep -c "2''" supabase/fixes/2026-08-24-rotation-notation.sql` returns `0`
-- [ ] 3.2 Phase 1's spec now passes: `npx playwright test rotation-notation-fix.spec.ts`
+- [x] 3.1 `grep -c "2''" supabase/fixes/2026-08-24-rotation-notation.sql` returns `0`
+- [x] 3.2 Phase 1's spec now passes: `npx playwright test rotation-notation-fix.spec.ts`
 
 #### Manual
 
-- [ ] 3.3 7 `UPDATE` statements executed against the live Supabase project via Studio SQL Editor
-- [ ] 3.4 Read-back `SELECT` confirms all 7 rows corrected, no `2'` substring remaining
-- [ ] 3.5 `public.algorithms` row count unchanged before/after
+- [x] 3.3 7 `UPDATE` statements executed against the live Supabase project via Studio SQL Editor
+- [x] 3.4 Read-back `SELECT` confirms all 7 rows corrected, no `2'` substring remaining
+- [x] 3.5 `public.algorithms` row count unchanged before/after
 
 ### Phase 4: Regression guard over real seed content
 
