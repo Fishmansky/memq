@@ -80,6 +80,8 @@ COMMIT;
 --     FROM public.algorithms
 --    WHERE name IN ('OLL 22', 'OLL 28', 'OLL 50', 'OLL 54',
 --                   'E-perm', 'Ga-perm', 'Gc-perm')
+--      AND list_id IN ('00000000-0000-0000-0000-000000000003',
+--                      '00000000-0000-0000-0000-000000000004')
 --    ORDER BY list_id, position;
 --
 -- Expect 7 rows, none containing the substring  2'

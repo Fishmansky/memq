@@ -157,9 +157,14 @@ locator, self-contained-cycle, and wait-for-state patterns. Written and run
 **Contract**: Reach the algorithm via its set page
 (`/sets/00000000-0000-0000-0000-000000000003`, the OLL list) and its row
 link, start practice, then click move buttons in order — `M'`, `U'`, `M`,
-then toggle the `X2` double-modifier button before clicking `U'` (dispatches
+then toggle the `X2` double-modifier button before clicking `U` (dispatches
 `U2`), then `M'`, `U'`, `M` — asserting `Consecutive clean: \d+\.` appears at
-the end. Per `E2E_RULES.md`, use `exact: true` on every move-button locator
+the end. *[Corrected post-implementation: this contract originally said to
+click `U'` under the `X2` modifier. That is wrong — `dispatchMove` appends
+`"2"` last, so `X2` + `U'` assembles `"U'2"`, itself an unreachable token —
+the exact bug class this change fixes. The shipped spec clicks `U` and
+documents why at `rotation-notation-fix.spec.ts:31-34`. Followed literally,
+the planned spec would never have gone green.]* Per `E2E_RULES.md`, use `exact: true` on every move-button locator
 (`M`/`M'` collide by substring) and assert the banner text, not intermediate
 state.
 
@@ -234,12 +239,18 @@ the live project — this repo has no data-migration convention, so this file
 is both the fix and its own audit trail.
 
 **Contract**: Seven explicit `UPDATE public.algorithms SET moves = '<corrected
-moves>' WHERE name = '<algorithm name>';` statements, one per affected row
-(`OLL 22`, `OLL 28`, `OLL 50`, `OLL 54`, `E-perm`, `Ga-perm`, `Gc-perm`), each
-using the exact corrected `moves` string now in `algos_seed.sql`. A one-time
-header comment marks the file as manual-run only (not part of `sql_paths`,
-not picked up by `db reset`). No `DELETE`/`INSERT` — the row identity (id,
-position) must not change, only the `moves` value.
+moves>' WHERE name = '<algorithm name>' AND list_id = '<list uuid>';`
+statements, one per affected row (`OLL 22`, `OLL 28`, `OLL 50`, `OLL 54`,
+`E-perm`, `Ga-perm`, `Gc-perm`), all wrapped in a single `BEGIN`/`COMMIT`,
+each using the exact corrected `moves` string now in `algos_seed.sql`. A
+one-time header comment marks the file as manual-run only (not part of
+`sql_paths`, not picked up by `db reset`). No `DELETE`/`INSERT` — the row
+identity (id, position) must not change, only the `moves` value.
+*[Corrected post-implementation to describe what actually ran against
+production: the `AND list_id` narrowing and the `BEGIN`/`COMMIT` wrapper were
+added during implementation. `public.algorithms` has only `PRIMARY KEY (id)` —
+no unique constraint on `name` — so a bare `WHERE name = …` would also rewrite
+identically-named rows in users' private lists.]*
 
 #### 2. Manual execution step
 
@@ -442,4 +453,9 @@ header comment should say so explicitly for whoever finds it next.
 - [x] 4.1 New seed-content test fails pre-fix, passes post-fix: `npm test` — f1d694c
 - [x] 4.2 Existing parity test still passes after refactor: `npm test` — f1d694c
 - [x] 4.3 Type checking passes: `npx astro check` — f1d694c
+      (verified via `npx tsc --noEmit`, exit 0 — the repo's enforced type
+      gate. `npx astro check` reports 5 pre-existing `ts(2345)` errors in
+      `src/pages/sets/[id].astro` and `src/pages/sets/[id]/[algoId].astro`,
+      both untouched by this change; tracked separately as
+      `context/changes/astro-check-params-types`.)
 - [x] 4.4 Linting passes: `npm run lint` — f1d694c

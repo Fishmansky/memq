@@ -1,7 +1,7 @@
 ---
 change_id: rotation-notation-fix
 title: Rotation notation fix
-status: implemented
+status: impl_reviewed
 created: 2026-08-24
 updated: 2026-08-25
 archived_at: null

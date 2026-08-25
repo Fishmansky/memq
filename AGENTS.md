@@ -7,7 +7,7 @@ MemQ is a Rubik's cube algorithm-memorization web app for intermediate solvers. 
 - Use `@/*` path alias (resolves to `./src/*`) for all intra-project imports — never use relative paths that escape a module's own directory.
 - Never hardcode `SUPABASE_URL` or `SUPABASE_KEY`; load from environment only. CI supplies them as secrets via process.env or Astro's env system
 - `context/archive/` is immutable — never write to or modify files under it.
-- No test runner is configured; do not generate `vitest`/`jest` invocations or add test scripts to `package.json`.
+- Tests run on vitest + Playwright: `npm test` (jsdom unit suite), `npm run test:integration` (DB-backed, `vitest.config.integration.ts`), `npm run test:e2e` (Playwright). Do not introduce a second runner (`jest`, `mocha`) or add new test scripts to `package.json`.
 - Run `astro sync` manually when adding new content collections or changing `src/content/config.ts`. CI runs it before build.
 
 

@@ -30,8 +30,10 @@ interface SeedRow {
 }
 
 function readSeedRows(relPath: string): SeedRow[] {
-  // Vitest runs with the repo root as cwd (see vitest.config.ts).
-  const source = readFileSync(resolve(process.cwd(), relPath), "utf8");
+  // Resolve from this module's own directory, not the process cwd — vitest.config.ts
+  // sets no `root`, so cwd varies by invocation (IDE runners, explicit --root).
+  // src/test/ → two levels up is the repo root.
+  const source = readFileSync(resolve(import.meta.dirname, "../..", relPath), "utf8");
   const rows: SeedRow[] = [];
   for (const match of source.matchAll(ALGORITHM_TUPLE)) {
     // Unescape SQL-doubled apostrophes back to the literal the DB stores.

@@ -23,7 +23,8 @@
 //   deterministic across re-runs.
 import { test, expect, type Page } from "@playwright/test";
 
-// OLL set + "OLL 28" = "M' U' M U2' M' U' M" (supabase/algos_seed.sql:99).
+// OLL set + "OLL 28" = "M' U' M U2 M' U' M" (supabase/algos_seed.sql). Before
+// this change the same row held "M' U' M U2' M' U' M" — the unreachable token.
 const OLL_LIST = "00000000-0000-0000-0000-000000000003";
 const ALGO_NAME = "OLL 28";
 const WRONG_MOVE = "D"; // not the first expected token (M') → marks a wrong attempt
