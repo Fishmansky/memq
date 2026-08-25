@@ -1,10 +1,10 @@
 ---
 change_id: rotation-notation-fix
 title: Rotation notation fix
-status: impl_reviewed
+status: archived
 created: 2026-08-24
 updated: 2026-08-25
-archived_at: null
+archived_at: 2026-08-25T01:14:46Z
 ---
 
 ## Notes
