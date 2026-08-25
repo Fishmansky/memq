@@ -33,7 +33,7 @@ MemQ targets intermediate Rubik's cube learners who can already solve the cube b
 | S-01 | browse-prebuilt-view-algorithm | sign in, land on pre-built algorithm sets within 2 clicks, browse algorithms in any set, open one to read its full move sequence           | F-01                   | FR-001, FR-002, FR-003, FR-006, FR-007            | done     |
 | S-02 | practice-session-core-loop     | start a practice session, input moves via button grid or keyboard, get immediate red/green/yellow slot feedback, see streak counter, get "You're PRO!" on 3rd consecutive clean run | F-01, S-01 | US-01, FR-008, FR-009, FR-010, FR-011, FR-012, FR-013 | done     |
 | S-03 | progress-tracking              | view total sessions completed globally (persists across browser sessions)                                                                  | S-02                   | FR-014                                            | ready    |
-| S-04 | custom-list-algorithm-entry    | create a custom algorithm list, add algorithms by name + move sequence, and receive a duplicate-detection prompt when the sequence matches an existing algorithm | F-01 | FR-004, FR-005, FR-015 | proposed |
+| S-04 | custom-list-algorithm-entry    | create a custom algorithm list, add algorithms by name + move sequence, and receive a duplicate-detection prompt when the sequence matches an existing algorithm | F-01 | FR-004, FR-005, FR-015 | ready    |
 
 ## Streams
 
@@ -97,7 +97,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Move validation latency: client-side DOM comparison must stay under 100 ms per NFR; verify on the Cloudflare Workers runtime before considering this slice done. — Owner: user. Block: no.
 - **Risk:** The dual-input model (button grid + keyboard shortcuts, FR-009) is the most non-trivial UI component in the MVP. With `main_goal: speed`, ship the grid first; keyboard shortcuts can follow in the same slice but are scoped last. Both are must-have per PRD.
-- **Follow-up:** `moves-grid-update` (open) — rework grid layout; some buttons too small/misplaced. UI polish on the delivered slice, tracked as its own change.
+- **Follow-up:** `moves-grid-update` (done) — reworked grid layout; some buttons were too small/misplaced. UI polish on the delivered slice, tracked as its own change. Archived 2026-08-25 → `context/archive/2026-05-29-moves-grid-update/`.
 - **Status:** done
 
 ### S-03: Progress tracking
@@ -123,17 +123,17 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Duplicate detection match semantics: PRD says "exactly matches" — confirm this means literal string equality (R ≠ R1, F' ≠ f') and not notation-normalized comparison. — Owner: user. Block: no.
 - **Risk:** Duplicate detection (FR-015) scans all stored sequences; ensure the query is index-backed at the schema layer (F-01). At `data_volume: small` this is low risk, but the index should be designed in F-01, not retrofitted here.
-- **Status:** proposed
+- **Status:** ready (F-01 prerequisite delivered)
 
 ## Backlog Handoff
 
 | Roadmap ID | Change ID                      | Suggested issue title                                        | Ready for `/10x-plan` | Notes                                                                                 |
 |------------|--------------------------------|--------------------------------------------------------------|-----------------------|---------------------------------------------------------------------------------------|
-| F-01       | domain-schema-rls              | Domain schema + Supabase RLS for MemQ                        | yes                   | Run `/10x-plan domain-schema-rls`; must complete before any domain slice              |
-| S-01       | browse-prebuilt-view-algorithm | Browse pre-built algorithm sets + view algorithm             | yes                   | Content seeded in supabase/algos_seed.sql; run `/10x-plan browse-prebuilt-view-algorithm` |
+| F-01       | domain-schema-rls              | Domain schema + Supabase RLS for MemQ                        | done                  | Archived 2026-08-25 → `context/archive/2026-05-27-domain-schema-rls/`                 |
+| S-01       | browse-prebuilt-view-algorithm | Browse pre-built algorithm sets + view algorithm             | done                  | Archived 2026-05-27 → `context/archive/2026-05-27-browse-prebuilt-view-algorithm/`    |
 | S-02       | practice-session-core-loop     | Practice session core loop (move input + feedback + streak)  | done                  | Archived 2026-05-29 → `context/archive/2026-05-28-practice-session-core-loop/`        |
 | S-03       | progress-tracking              | Progress tracking — total sessions completed                 | yes                   | S-02 done; run `/10x-plan progress-tracking`                                          |
-| S-04       | custom-list-algorithm-entry    | Custom algorithm list + algorithm entry + duplicate detection | no                    | Proposed; ready after F-01 — run `/10x-plan custom-list-algorithm-entry` in parallel with S-01 |
+| S-04       | custom-list-algorithm-entry    | Custom algorithm list + algorithm entry + duplicate detection | yes                   | F-01 prerequisite done — run `/10x-plan custom-list-algorithm-entry`                  |
 
 ## Open Roadmap Questions
 
