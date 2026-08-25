@@ -251,16 +251,16 @@ None. No data, schema, or API contract changes.
 
 #### Automated
 
-- [x] 1.1 `astro check` reports 0 errors: `npx astro check`
-- [x] 1.2 Typecheck script works: `npm run typecheck`
-- [x] 1.3 TS unit-level check still clean: `npx tsc --noEmit`
-- [x] 1.4 Linting passes: `npm run lint`
-- [x] 1.5 Build succeeds: `npm run build`
-- [x] 1.6 Unit tests pass: `npm test`
-- [x] 1.7 CI workflow contains the typecheck step: `grep -n "npm run typecheck" .github/workflows/ci.yml`
+- [x] 1.1 `astro check` reports 0 errors: `npx astro check` — 1ebaa89
+- [x] 1.2 Typecheck script works: `npm run typecheck` — 1ebaa89
+- [x] 1.3 TS unit-level check still clean: `npx tsc --noEmit` — 1ebaa89
+- [x] 1.4 Linting passes: `npm run lint` — 1ebaa89
+- [x] 1.5 Build succeeds: `npm run build` — 1ebaa89
+- [x] 1.6 Unit tests pass: `npm test` — 1ebaa89
+- [x] 1.7 CI workflow contains the typecheck step: `grep -n "npm run typecheck" .github/workflows/ci.yml` — 1ebaa89
 
 #### Manual
 
-- [x] 1.8 `/sets/{id}` renders the set name and its algorithm list unchanged
-- [x] 1.9 `/sets/{id}/{algoId}` renders the practice session unchanged
-- [x] 1.10 A nonexistent set id still redirects to `/dashboard` with the error banner
+- [x] 1.8 `/sets/{id}` renders the set name and its algorithm list unchanged — 1ebaa89
+- [x] 1.9 `/sets/{id}/{algoId}` renders the practice session unchanged — 1ebaa89
+- [x] 1.10 A nonexistent set id still redirects to `/dashboard` with the error banner — 1ebaa89
