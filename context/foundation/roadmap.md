@@ -1,7 +1,7 @@
 ---
 project: MemQ
 version: 1
-status: draft
+status: active
 created: 2026-05-25
 updated: 2026-08-25
 prd_version: 1
@@ -138,8 +138,11 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Open Roadmap Questions
 
-1. **Which pre-built algorithm sets ship at launch, and who seeds the database?** — Owner: user. Block: S-01 (and transitively S-02 — the north star).
-Answer: pre-built algorithms are stored in supabase/algos_seed.sql - it has been already supplied to production database
+None open.
+
+**Resolved:**
+
+1. ~~**Which pre-built algorithm sets ship at launch, and who seeds the database?**~~ — Owner: user. Block was: S-01 (and transitively S-02 — the north star). **Resolved 2026-08-25:** pre-built algorithms live in `supabase/algos_seed.sql`, already applied to the production database. S-01 and S-02 shipped against that content.
 
 ## Parked
 
