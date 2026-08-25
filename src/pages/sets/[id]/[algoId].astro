@@ -4,6 +4,15 @@ import PracticeSession from "@/components/app/PracticeSession";
 import { createClient } from "@/lib/supabase";
 
 const { id, algoId } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/dashboard?error=" + encodeURIComponent("Set not found"));
+}
+
+if (!algoId) {
+  return Astro.redirect(`/sets/${id}?error=` + encodeURIComponent("Algorithm not found"));
+}
+
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 
 let algorithm: { id: string; name: string; moves: string } | null = null;
@@ -38,7 +47,7 @@ if (supabase) {
 }
 
 if (!algorithm) {
-  return Astro.redirect((id ? `/sets/${id}` : "/dashboard") + "?error=" + encodeURIComponent("Algorithm not found"));
+  return Astro.redirect(`/sets/${id}` + "?error=" + encodeURIComponent("Algorithm not found"));
 }
 
 if (!list) {

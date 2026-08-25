@@ -12,6 +12,7 @@
     "test:integration": "vitest run --config vitest.config.integration.ts",
     "test:integration:watch": "vitest --config vitest.config.integration.ts",
     "test:e2e": "playwright test",
+    "typecheck": "astro check",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write ."

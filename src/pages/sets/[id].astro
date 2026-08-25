@@ -4,6 +4,11 @@ import AlgorithmRow from "@/components/app/AlgorithmRow.astro";
 import { createClient } from "@/lib/supabase";
 
 const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect("/dashboard?error=" + encodeURIComponent("Set not found"));
+}
+
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 
 let list: { id: string; name: string } | null = null;
