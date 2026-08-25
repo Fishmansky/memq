@@ -46,13 +46,14 @@ Navigation aid — groups items that share a Prerequisites chain. Canonical orde
 
 ## Baseline
 
-What's already in place in the codebase as of 2026-05-25 (auto-researched + user-confirmed).
+What's already in place in the codebase as of 2026-08-25 (refreshed after F-01, S-01, S-02 shipped; supersedes the 2026-05-25 snapshot).
 Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** present — Astro 6.3.1 + React 19 + Tailwind v4; pages: index, dashboard, auth/* (`src/pages/`)
-- **Backend / API:** partial — auth-only API routes (signin/signup/signout, `src/pages/api/auth/`); middleware guards `/dashboard`; no domain routes yet
-- **Data:** partial — Supabase client configured (`src/lib/supabase.ts`); `supabase/config.toml` present; no schema or migrations yet
+- **Frontend:** present — Astro 6.3.1 + React 19.2 + Tailwind v4; pages: index, dashboard, auth/*, plus the domain set/algorithm views `src/pages/sets/[id].astro` and `src/pages/sets/[id]/[algoId].astro`
+- **Backend / API:** present — auth routes (signin/signup/signout, `src/pages/api/auth/`) and the domain route `src/pages/api/practice/complete.ts`; middleware guards `/dashboard` and `/sets` (`PROTECTED_ROUTES` in `src/middleware.ts`)
+- **Data:** present — schema shipped in `supabase/migrations/20260527000000_domain_schema_rls.sql`: four tables (`algorithm_lists`, `algorithms`, `practice_sessions`, `algorithm_mastery`), RLS enabled on all four with 13 policies. Generated types in `src/db/database.types.ts`; client in `src/lib/supabase.ts`. Content seeded from `supabase/algos_seed.sql` + `supabase/seed.sql`; one-off corrections live in `supabase/fixes/`
 - **Auth:** present — Supabase email+password, cookie-based sessions, route middleware, full auth pages (`src/pages/auth/`, `src/middleware.ts`)
+- **Testing:** present — vitest unit suite (`npm test`, `vitest.config.ts`), DB-backed integration suite (`npm run test:integration`, `vitest.config.integration.ts`, `src/test/integration/`), and Playwright E2E (`npm run test:e2e`, `playwright/test/`). Husky pre-commit hook runs lint-staged
 - **Deploy / infra:** present — `wrangler.jsonc` (Cloudflare Workers), GitHub Actions CI/CD auto-deploys on master push (`.github/workflows/ci.yml`)
 - **Observability:** absent — no logging, error tracking, or metrics
 
