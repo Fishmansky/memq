@@ -1,10 +1,10 @@
 ---
 change_id: astro-check-params-types
 title: Narrow Astro.params before passing to Supabase .eq()
-status: impl_reviewed
+status: archived
 created: 2026-08-25
 updated: 2026-08-25
-archived_at: null
+archived_at: 2026-08-25T01:10:58Z
 ---
 
 ## Notes
