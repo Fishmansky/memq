@@ -261,6 +261,6 @@ None. No data, schema, or API contract changes.
 
 #### Manual
 
-- [x] 1.8 `/sets/{id}` renders the set name and its algorithm list unchanged — 1ebaa89 (basis: happy path exercised by `playwright/test/seed.spec.ts`; no source-visible behavior change — the guard branch is unreachable via routing)
-- [x] 1.9 `/sets/{id}/{algoId}` renders the practice session unchanged — 1ebaa89 (basis: happy path exercised by `playwright/test/practice-loop-persistence.spec.ts`)
-- [x] 1.10 A nonexistent set id still redirects to `/dashboard` with the error banner — 1ebaa89 (basis: redirect path at `src/pages/sets/[id].astro:41` is untouched by the diff; the new guard at line 8 only fires on an absent param, which routing cannot produce)
+- [x] 1.8 `/sets/{id}` renders the set name and its algorithm list unchanged (basis: happy path exercised by `playwright/test/seed.spec.ts`; no source-visible behavior change — the guard branch is unreachable via routing) — 1ebaa89
+- [x] 1.9 `/sets/{id}/{algoId}` renders the practice session unchanged (basis: happy path exercised by `playwright/test/practice-loop-persistence.spec.ts`) — 1ebaa89
+- [x] 1.10 A nonexistent set id still redirects to `/dashboard` with the error banner (basis: redirect path at `src/pages/sets/[id].astro:41` is untouched by the diff; the new guard at line 8 only fires on an absent param, which routing cannot produce) — 1ebaa89
