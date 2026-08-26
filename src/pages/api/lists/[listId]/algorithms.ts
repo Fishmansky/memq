@@ -12,6 +12,8 @@ import { addExistingAlgorithm } from "@/lib/lists/addExistingAlgorithm";
 // decides whether the caller owns the target list, and a rejection maps to 403.
 // The locals.user gate is required: src/middleware.ts does not cover /api/*.
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export const POST: APIRoute = async (context) => {
   const user = context.locals.user;
   if (!user) {
@@ -21,9 +23,13 @@ export const POST: APIRoute = async (context) => {
     });
   }
 
+  // Shape-checked, not authorized: a non-UUID reaches PostgREST as
+  // `.eq("list_id", "foo")`, Postgres raises 22P02, and the lib module's
+  // catch-all maps that to a 500 for what is plainly a bad request.
+  // Authorization stays with alg_insert either way.
   const listId = context.params.listId;
-  if (!listId) {
-    return new Response(JSON.stringify({ error: "Missing listId" }), {
+  if (!listId || !UUID_RE.test(listId)) {
+    return new Response(JSON.stringify({ error: "Invalid listId" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },
     });
@@ -57,7 +63,7 @@ export const POST: APIRoute = async (context) => {
   }
 
   if (typeof fields.sourceAlgorithmId === "string") {
-    const result = await addExistingAlgorithm(supabase, user, {
+    const result = await addExistingAlgorithm(supabase, {
       listId,
       sourceAlgorithmId: fields.sourceAlgorithmId,
     });
@@ -75,7 +81,7 @@ export const POST: APIRoute = async (context) => {
         headers: { "Content-Type": "application/json" },
       });
     }
-    const result = await addAlgorithm(supabase, user, {
+    const result = await addAlgorithm(supabase, {
       listId,
       name: fields.name,
       moves: fields.moves,

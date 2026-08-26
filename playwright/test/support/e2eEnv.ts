@@ -85,13 +85,29 @@ export async function signedInUserClient(): Promise<SupabaseClient<Database>> {
  * `algorithms` rows first, then the lists. Names — not a shared prefix — scope
  * the sweep, so a teardown in one parallel worker cannot delete a list another
  * worker is still driving.
+ *
+ * The lookup filters on `user_id` and `is_system` as well as the names. RLS
+ * (`al_delete`) already scopes deletes to the caller's own non-system lists, so
+ * this is belt-and-braces — but this runs against the REMOTE project, and a
+ * name-only filter would depend on the policy alone to keep a sweep off rows
+ * this spec never created.
  */
 export async function deleteOwnLists(client: SupabaseClient<Database>, names: string[]): Promise<void> {
   if (names.length === 0) {
     return;
   }
 
-  const lists = await client.from("algorithm_lists").select("id").in("name", names);
+  const { data: auth, error: authError } = await client.auth.getUser();
+  if (authError) {
+    throw authError;
+  }
+
+  const lists = await client
+    .from("algorithm_lists")
+    .select("id")
+    .in("name", names)
+    .eq("user_id", auth.user.id)
+    .eq("is_system", false);
   if (lists.error) {
     throw lists.error;
   }

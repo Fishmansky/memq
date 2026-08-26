@@ -10,7 +10,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/db/database.types";
 import { validateMoves } from "@/lib/notation/moveGrammar";
-import { LIST_NAME_MAX_LENGTH, type ListUser } from "@/lib/lists/createList";
+import { LIST_NAME_MAX_LENGTH } from "@/lib/lists/createList";
 
 export interface AddAlgorithmInput {
   listId: string;
@@ -75,7 +75,6 @@ function toMatch(row: MatchRow): DuplicateMatch {
  */
 export async function addAlgorithm(
   supabase: SupabaseClient<Database>,
-  user: ListUser,
   input: AddAlgorithmInput,
 ): Promise<AddAlgorithmResult> {
   const { listId, createAnyway } = input;

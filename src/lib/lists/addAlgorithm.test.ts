@@ -34,6 +34,9 @@ interface StubConfig {
 interface Captured {
   insertPayload?: Record<string, unknown>;
   insertCount: number;
+  // Every .order() the duplicate query issues, in call order. Asserted by the
+  // "emits the pre-built-first ordering" test below.
+  orderCalls: [string, unknown][];
 }
 
 function makeStub(config: StubConfig, captured: Captured): SupabaseClient<Database> {
@@ -45,24 +48,29 @@ function makeStub(config: StubConfig, captured: Captured): SupabaseClient<Databa
         select() {
           return {
             eq: () => ({
-              order: () => ({
-                // Second .order() ends the duplicate query.
-                order: () =>
-                  Promise.resolve({
-                    data: config.matchError ? null : (config.matches ?? []),
-                    error: config.matchError ?? null,
-                  }),
-                limit: () => ({
-                  maybeSingle: () =>
+              order: (column: string, opts: unknown) => (
+                captured.orderCalls.push([column, opts]),
+                {
+                  // Second .order() ends the duplicate query.
+                  order: (column2: string, opts2: unknown) => (
+                    captured.orderCalls.push([column2, opts2]),
                     Promise.resolve({
-                      data:
-                        config.positionError || config.maxPosition === null || config.maxPosition === undefined
-                          ? null
-                          : { position: config.maxPosition },
-                      error: config.positionError ?? null,
-                    }),
-                }),
-              }),
+                      data: config.matchError ? null : (config.matches ?? []),
+                      error: config.matchError ?? null,
+                    })
+                  ),
+                  limit: () => ({
+                    maybeSingle: () =>
+                      Promise.resolve({
+                        data:
+                          config.positionError || config.maxPosition === null || config.maxPosition === undefined
+                            ? null
+                            : { position: config.maxPosition },
+                        error: config.positionError ?? null,
+                      }),
+                  }),
+                }
+              ),
             }),
           };
         },
@@ -88,10 +96,9 @@ function makeStub(config: StubConfig, captured: Captured): SupabaseClient<Databa
 }
 
 function fresh(): Captured {
-  return { insertCount: 0 };
+  return { insertCount: 0, orderCalls: [] };
 }
 
-const USER = { id: "user-1" };
 const VALID = { listId: TARGET_LIST, name: "My T-perm", moves: "R U R' U'" };
 
 const ownMatch: MatchRow = {
@@ -125,7 +132,7 @@ afterEach(() => {
 describe("addAlgorithm — notation validation", () => {
   it("rejects R2' with the offending token named, and issues no insert", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({}, captured), USER, { ...VALID, moves: "R U R2'" });
+    const result = await addAlgorithm(makeStub({}, captured), { ...VALID, moves: "R U R2'" });
     expect(result.status).toBe(400);
     expect((result.body as { error: string }).error).toContain("R2'");
     expect(captured.insertCount).toBe(0);
@@ -133,14 +140,14 @@ describe("addAlgorithm — notation validation", () => {
 
   it("rejects an empty move sequence", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({}, captured), USER, { ...VALID, moves: "   " });
+    const result = await addAlgorithm(makeStub({}, captured), { ...VALID, moves: "   " });
     expect(result.status).toBe(400);
     expect(captured.insertCount).toBe(0);
   });
 
   it("rejects an empty name", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({}, captured), USER, { ...VALID, name: "  " });
+    const result = await addAlgorithm(makeStub({}, captured), { ...VALID, name: "  " });
     expect(result.status).toBe(400);
     expect(captured.insertCount).toBe(0);
   });
@@ -149,21 +156,21 @@ describe("addAlgorithm — notation validation", () => {
 describe("addAlgorithm — insert path (no match)", () => {
   it("computes position as max + 1", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({ matches: [], maxPosition: 7 }, captured), USER, VALID);
+    const result = await addAlgorithm(makeStub({ matches: [], maxPosition: 7 }, captured), VALID);
     expect(result.status).toBe(201);
     expect(captured.insertPayload?.position).toBe(8);
   });
 
   it("starts an empty list at 1, not 0 — position is the rendered row number", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({ matches: [], maxPosition: null }, captured), USER, VALID);
+    const result = await addAlgorithm(makeStub({ matches: [], maxPosition: null }, captured), VALID);
     expect(result.status).toBe(201);
     expect(captured.insertPayload?.position).toBe(1);
   });
 
   it("stores the RAW moves string, not the normalized one", async () => {
     const captured = fresh();
-    await addAlgorithm(makeStub({ matches: [], maxPosition: null }, captured), USER, {
+    await addAlgorithm(makeStub({ matches: [], maxPosition: null }, captured), {
       ...VALID,
       moves: "(R U R') (U' R U)",
     });
@@ -172,7 +179,7 @@ describe("addAlgorithm — insert path (no match)", () => {
   });
 
   it("returns 201 with status created", async () => {
-    const result = await addAlgorithm(makeStub({ matches: [], maxPosition: null }, fresh()), USER, VALID);
+    const result = await addAlgorithm(makeStub({ matches: [], maxPosition: null }, fresh()), VALID);
     expect(result.status).toBe(201);
     expect((result.body as { status: string }).status).toBe("created");
   });
@@ -181,7 +188,7 @@ describe("addAlgorithm — insert path (no match)", () => {
 describe("addAlgorithm — duplicate detection", () => {
   it("reports a match outside the target list without inserting", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({ matches: [ownMatch] }, captured), USER, VALID);
+    const result = await addAlgorithm(makeStub({ matches: [ownMatch] }, captured), VALID);
     expect(result.status).toBe(200);
     expect(result.body).toEqual({
       status: "duplicate",
@@ -197,7 +204,7 @@ describe("addAlgorithm — duplicate detection", () => {
   });
 
   it("carries listName and isSystem so the panel can say WHERE the match lives", async () => {
-    const result = await addAlgorithm(makeStub({ matches: [systemMatch] }, fresh()), USER, VALID);
+    const result = await addAlgorithm(makeStub({ matches: [systemMatch] }, fresh()), VALID);
     const { match } = result.body as { match: { listName: string; isSystem: boolean } };
     expect(match.listName).toBe("PLL (Permutation of Last Layer)");
     expect(match.isSystem).toBe(true);
@@ -206,15 +213,30 @@ describe("addAlgorithm — duplicate detection", () => {
   it("proposes the PRE-BUILT match when a pre-built and an own-list row both match", async () => {
     // Stub deliberately yields the own-list row first: the pre-built preference
     // must come from the selection rule, not from the array's order.
-    const result = await addAlgorithm(makeStub({ matches: [ownMatch, systemMatch] }, fresh()), USER, VALID);
+    const result = await addAlgorithm(makeStub({ matches: [ownMatch, systemMatch] }, fresh()), VALID);
     const { match } = result.body as { match: { id: string; isSystem: boolean } };
     expect(match.id).toBe("algo-sys");
     expect(match.isSystem).toBe(true);
   });
 
+  // The JS `rows.find(is_system)` above is a belt-and-braces re-application of a
+  // preference the SERVER is supposed to apply. Without this test the
+  // `.order()` clause itself has no coverage — and lessons.md records that the
+  // sibling `{ referencedTable }` form of this exact call is a SILENT no-op:
+  // PostgREST returns 200 with unspecified order, so nothing fails loudly. Pin
+  // the positional `table(column)` string form that actually works.
+  it("emits the pre-built-first ordering as a positional embedded-column clause", async () => {
+    const captured = fresh();
+    await addAlgorithm(makeStub({ matches: [ownMatch, systemMatch] }, captured), VALID);
+    expect(captured.orderCalls).toEqual([
+      ["algorithm_lists(is_system)", { ascending: false }],
+      ["created_at", { ascending: true }],
+    ]);
+  });
+
   it("returns already_in_list, with no insert, when the match is in the target list", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({ matches: [sameListMatch] }, captured), USER, VALID);
+    const result = await addAlgorithm(makeStub({ matches: [sameListMatch] }, captured), VALID);
     expect(result.status).toBe(409);
     expect((result.body as { status: string }).status).toBe("already_in_list");
     expect(captured.insertCount).toBe(0);
@@ -222,14 +244,14 @@ describe("addAlgorithm — duplicate detection", () => {
 
   it("prefers already_in_list over duplicate when the sequence is both here and elsewhere", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({ matches: [systemMatch, sameListMatch] }, captured), USER, VALID);
+    const result = await addAlgorithm(makeStub({ matches: [systemMatch, sameListMatch] }, captured), VALID);
     expect(result.status).toBe(409);
     expect(captured.insertCount).toBe(0);
   });
 
   it("inserts anyway when createAnyway is true", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({ matches: [systemMatch], maxPosition: 2 }, captured), USER, {
+    const result = await addAlgorithm(makeStub({ matches: [systemMatch], maxPosition: 2 }, captured), {
       ...VALID,
       createAnyway: true,
     });
@@ -240,7 +262,7 @@ describe("addAlgorithm — duplicate detection", () => {
 
   it("createAnyway does NOT override already_in_list", async () => {
     const captured = fresh();
-    const result = await addAlgorithm(makeStub({ matches: [sameListMatch] }, captured), USER, {
+    const result = await addAlgorithm(makeStub({ matches: [sameListMatch] }, captured), {
       ...VALID,
       createAnyway: true,
     });
@@ -253,7 +275,6 @@ describe("addAlgorithm — error branches", () => {
   it("maps an RLS violation on insert to 403, not 500", async () => {
     const result = await addAlgorithm(
       makeStub({ matches: [], maxPosition: null, insertError: { code: "42501" } }, fresh()),
-      USER,
       VALID,
     );
     expect(result).toEqual({ status: 403, body: { error: "Not your list" } });
@@ -263,7 +284,6 @@ describe("addAlgorithm — error branches", () => {
     const spy = vi.spyOn(console, "error").mockImplementation(() => undefined);
     const result = await addAlgorithm(
       makeStub({ matchError: { message: "column blah does not exist" } }, fresh()),
-      USER,
       VALID,
     );
     expect(result).toEqual({ status: 500, body: { error: "Failed to add algorithm" } });
@@ -278,7 +298,6 @@ describe("addAlgorithm — error branches", () => {
         { matches: [], maxPosition: null, insertError: { code: "08006", message: "connection reset" } },
         fresh(),
       ),
-      USER,
       VALID,
     );
     expect(result).toEqual({ status: 500, body: { error: "Failed to add algorithm" } });

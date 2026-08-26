@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from "vitest";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/db/database.types";
 import { normalizeMoves } from "@/lib/notation/moveGrammar";
-import { serviceClient } from "./db";
+import { createList, createTestUser, deleteTestUser, serviceClient } from "./db";
 
 // The JS normalizer and the SQL `moves_normalized` generated column are two
 // definitions of one rule, in two languages that cannot share code. Duplicate
@@ -49,19 +49,16 @@ describe("normalizeMoves ↔ moves_normalized parity", () => {
   it("agrees on a hand-written row with parens, a double space, and U+2019", async () => {
     const raw = "(R  U2 R’ U') (R U R')";
 
-    const list = await svc
-      .from("algorithm_lists")
-      .insert({ name: `parity-${crypto.randomUUID()}`, is_system: true, user_id: null })
-      .select("id")
-      .single();
-    if (list.error) {
-      throw list.error;
-    }
+    // Owned by a throwaway user, NOT `is_system: true`. A pre-built list is
+    // visible to every user of the target database, and cleanup here is
+    // try/finally only — a killed run would leave it behind for good.
+    const user = await createTestUser(svc);
+    const listId = await createList(svc, user.userId, `parity-${crypto.randomUUID()}`);
 
     try {
       const inserted = await svc
         .from("algorithms")
-        .insert({ list_id: list.data.id, name: "parity-case", moves: raw, position: 1 })
+        .insert({ list_id: listId, name: "parity-case", moves: raw, position: 1 })
         .select("moves, moves_normalized")
         .single();
       if (inserted.error) {
@@ -74,8 +71,10 @@ describe("normalizeMoves ↔ moves_normalized parity", () => {
       expect(inserted.data.moves_normalized).toBe("R U2 R' U' R U R'");
       expect(normalizeMoves(raw)).toBe(inserted.data.moves_normalized);
     } finally {
-      // Deleting the list cascades the algorithm row.
-      await svc.from("algorithm_lists").delete().eq("id", list.data.id);
+      // Deleting the list cascades the algorithm row; deleting the user then
+      // takes the list with it even if the first delete never ran.
+      await svc.from("algorithm_lists").delete().eq("id", listId);
+      await deleteTestUser(svc, user.userId);
     }
   });
 });

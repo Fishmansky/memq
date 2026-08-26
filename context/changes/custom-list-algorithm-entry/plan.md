@@ -60,6 +60,7 @@ Verified by: the automated criteria in each phase below, plus an integration tes
 - **No shared error-banner extraction.** The banner is copy-pasted three times; this slice adds no fourth copy to a *new* page, and leaves the existing three alone rather than widening the diff.
 - **No `UNIQUE(list_id, moves)` constraint.** Check-then-insert stays a TOCTOU race, same accepted shape as `completePractice.ts:31-44`. Consequence: two truly concurrent submissions of the same sequence into one list can both land. At `data_volume: small` with single-user-per-list writes, the window is not worth a migration and 23505 mapping this slice has no other use for.
 - **No changes to the practice loop.** `PracticeSession.tsx` changes by exactly one import line (Phase 1); its behavior is untouched.
+- **No `UNIQUE(list_id, position)` constraint.** `position = max + 1` (`addAlgorithm.ts:152-171`, `addExistingAlgorithm.ts:78-92`) is a separate read then insert, so two concurrent adds into one list can both write N+1. Consequence: duplicate learner-visible row numbers and nondeterministic ordering on `/sets/[id]`, which orders by `position`. Same accepted shape and same reasoning as the `UNIQUE(list_id, moves)` exclusion above — at `data_volume: small` with single-user-per-list writes the window is not worth a migration. Recorded during the 2026-08-26 implementation review (F2); a future reorder/edit slice must close it before it can rely on `position` being unique.
 
 ## Implementation Approach
 
@@ -195,7 +196,9 @@ No RLS policy changes: the new column is on an existing table already covered by
 
 **Intent**: Reflect both new columns so Phase 3 can type its inserts and selects.
 
-**Contract**: Regenerated via the Supabase CLI. `algorithms.Row` gains `moves_normalized: string` and `source_algorithm_id: string | null`; `algorithms.Insert` gains `source_algorithm_id?: string | null` and must NOT accept `moves_normalized` (generated columns are not insertable).
+**Contract**: Regenerated via the Supabase CLI. `algorithms.Row` gains `moves_normalized: string | null` and `source_algorithm_id: string | null`; `algorithms.Insert` gains `source_algorithm_id?: string | null` and `moves_normalized?: string | null`.
+
+*Amended 2026-08-26 (impl review F8).* Originally worded as "`Row` gains `moves_normalized: string`" and "`Insert` must NOT accept `moves_normalized` (generated columns are not insertable)". That was an unachievable expectation, not a target: the CLI emits every generated column as optional-in-Insert and nullable-in-Row regardless of the `GENERATED ALWAYS ... STORED` clause, and `context/foundation/lessons.md` already carries the accepted rule for exactly this. Consequences to expect, not to fix in the type file: reads must null-coalesce (`addExistingAlgorithm.ts:66`) and a test that wants a non-null value has to guard for it (`listIsolation.int.test.ts:82-89`). Postgres still rejects any actual write to the column, so the looseness is latent — nothing in this slice inserts it.
 
 #### 3. Normalizer parity test
 
@@ -493,7 +496,7 @@ Cover the user-visible create→duplicate→add flow end to end, and wire `npm t
 
 **Intent**: Verify the flow that is the heart of the feature, against the built worker, without leaving rows behind in the shared remote project.
 
-**Contract**: Follows `playwright/test/E2E_RULES.md` — role/label/text locators only, `{ exact: true }` on any move-token text, no `waitForTimeout`, auth from the shared `storageState`. Every created list and algorithm name carries a timestamp suffix so parallel runs and re-runs cannot collide. An `afterEach` deletes what the spec created (this is the first spec in the repo to do teardown; delete via a service-role client built the way `src/test/integration/db.ts` builds one, since the app ships no delete path).
+**Contract**: Follows `playwright/test/E2E_RULES.md` — role/label/text locators only, `{ exact: true }` on any move-token text, no `waitForTimeout`, auth from the shared `storageState`. Every created list and algorithm name carries a timestamp suffix so parallel runs and re-runs cannot collide. An `afterEach` deletes what the spec created (this is the first spec in the repo to do teardown; the app ships no delete path). *Amended 2026-08-26 (impl review F5) to match what shipped:* teardown signs in as the E2E user with the **anon** key and deletes through the `al_delete` / `alg_delete` policies (`playwright/test/support/e2eEnv.ts:64-79`), not via a service-role client. No remote service-role key exists locally, and an RLS-scoped teardown cannot delete rows the spec was not allowed to create in the first place.
 
 Scenarios: create a list and see it on the dashboard; add an algorithm and see it in the list; submit the move sequence of a seeded pre-built algorithm and see the duplicate panel name it; choose "Add this one" and see the algorithm appear in the custom list; submit invalid notation and see the form error.
 
@@ -509,9 +512,9 @@ Scenarios: create a list and see it on the dashboard; add an algorithm and see i
 
 **File**: `README.md`
 
-**Intent**: Record that the E2E spec now requires a service-role key for teardown, so the next person running `npm run test:e2e` is not surprised.
+**Intent**: Record how the E2E spec cleans up after itself, so the next person running `npm run test:e2e` is not surprised. *Amended 2026-08-26 (impl review F5):* originally worded as "requires a service-role key for teardown"; the shipped teardown uses the E2E user's own session instead.
 
-**Contract**: One line in the testing section naming `SUPABASE_SERVICE_ROLE_KEY` as required for the custom-list spec's cleanup, alongside the existing `.env.e2e` credentials note.
+**Contract**: A note in the testing section stating that the custom-list spec cleans up using the E2E user's own session (`SUPABASE_URL` / `SUPABASE_KEY` from `.dev.vars` plus the `.env.e2e` credentials) and that **no service-role key is required** — alongside the existing `.env.e2e` credentials note.
 
 ### Success Criteria:
 
@@ -526,7 +529,7 @@ Scenarios: create a list and see it on the dashboard; add an algorithm and see i
 
 - CI run on the PR shows the test step executing and passing
 - Deliberate-break check: revert the `dashboard.astro` `is_system` change and confirm the "create a list and see it on the dashboard" scenario fails; restore and confirm it passes
-- After an E2E run, a service-role query shows no leftover timestamped lists or algorithms in the remote project
+- After an E2E run, no leftover timestamped lists or algorithms remain in the remote project (read back through the E2E user's own RLS-scoped session; no remote service-role key exists locally)
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause for manual confirmation. This is the final phase.
 

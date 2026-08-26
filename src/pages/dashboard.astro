@@ -22,7 +22,12 @@ if (supabase) {
     .order("created_at", { ascending: true });
 
   if (error) {
-    queryError = error.message;
+    // Logged, not rendered. A PostgREST message names columns, tables, and
+    // sometimes the policy that rejected the read — the same reason
+    // createList.ts:57-61 returns a generic string. House rule for this repo:
+    // server logs carry the detail, the browser gets a fixed message.
+    console.error("dashboard: algorithm_lists query failed", error);
+    queryError = "Could not load your sets. Try again.";
   } else {
     sets = data;
   }

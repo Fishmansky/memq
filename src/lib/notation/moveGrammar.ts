@@ -92,6 +92,12 @@ export function normalizeMoves(raw: string): string {
     .trim();
 }
 
+// Cap the raw input before tokenizing. Nothing else bounds `moves`: the column
+// is plain `text` and the route has no size limit, so an all-valid-token
+// megabyte would be tokenized twice per POST and re-tokenized on every
+// practice render. 500 chars is ~5x the longest realistic algorithm.
+export const MOVES_MAX_LENGTH = 500;
+
 // --- Validator ------------------------------------------------------------
 // Gates a submitted sequence against the producible vocabulary. Checks BOTH
 // token streams:
@@ -104,6 +110,10 @@ export function normalizeMoves(raw: string): string {
 // advances, and no error is shown — the 2026-08-24 rotation-notation incident
 // class, reached through the input path this feature adds.
 export function validateMoves(raw: string): { ok: true; normalized: string } | { ok: false; error: string } {
+  if (raw.length > MOVES_MAX_LENGTH) {
+    return { ok: false, error: `Move sequence must be ${String(MOVES_MAX_LENGTH)} characters or fewer.` };
+  }
+
   const normalized = normalizeMoves(raw);
   if (normalized === "") {
     return { ok: false, error: "Enter a move sequence." };

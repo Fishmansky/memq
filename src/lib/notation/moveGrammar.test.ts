@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { PRODUCIBLE_TOKENS, normalizeMoves, validateMoves } from "@/lib/notation/moveGrammar";
+import { MOVES_MAX_LENGTH, PRODUCIBLE_TOKENS, normalizeMoves, validateMoves } from "@/lib/notation/moveGrammar";
 
 // Oracle is the intended rule, stated as literals here — never the
 // implementation read back. `normalizeMoves` is half of a two-language
@@ -80,5 +80,22 @@ describe("validateMoves", () => {
     const result = validateMoves("R’ U");
     expect(normalizeMoves("R’ U")).toBe("R' U"); // normalized form is fine
     expect(result.ok).toBe(false);
+  });
+
+  // The length cap is the only bound on `moves`: the column is plain `text` and
+  // the route has no size limit, so without it an all-valid-token megabyte is
+  // tokenized twice per POST and re-tokenized on every practice render.
+  it("rejects an over-long sequence even when every token is producible", () => {
+    const raw = "R U R' U' ".repeat(200).trim();
+    expect(raw.length).toBeGreaterThan(MOVES_MAX_LENGTH);
+    const result = validateMoves(raw);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.error).toContain(String(MOVES_MAX_LENGTH));
+  });
+
+  it("accepts a sequence exactly at the cap", () => {
+    const raw = "R ".repeat(MOVES_MAX_LENGTH / 2).trimEnd();
+    expect(raw.length).toBeLessThanOrEqual(MOVES_MAX_LENGTH);
+    expect(validateMoves(raw).ok).toBe(true);
   });
 });

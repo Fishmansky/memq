@@ -11,7 +11,6 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/db/database.types";
-import type { ListUser } from "@/lib/lists/createList";
 import type { AddedAlgorithm } from "@/lib/lists/addAlgorithm";
 
 export interface AddExistingAlgorithmInput {
@@ -38,7 +37,6 @@ const RLS_VIOLATION = "42501";
  */
 export async function addExistingAlgorithm(
   supabase: SupabaseClient<Database>,
-  user: ListUser,
   input: AddExistingAlgorithmInput,
 ): Promise<AddExistingAlgorithmResult> {
   const { listId, sourceAlgorithmId } = input;

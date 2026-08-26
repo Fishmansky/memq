@@ -30,7 +30,10 @@ if (supabase) {
   if (!algoError) {
     algorithm = algoData;
   } else {
-    bannerError = algoError.message;
+    // Logged, not rendered — same house rule as dashboard.astro and
+    // sets/[id].astro: a PostgREST message can name columns and policies.
+    console.error("sets/[id]/[algoId]: algorithms query failed", algoError);
+    bannerError = "Could not load this algorithm.";
   }
 
   const { data: listData, error: listError } = await supabase
@@ -42,7 +45,8 @@ if (supabase) {
   if (!listError) {
     list = listData;
   } else {
-    bannerError ??= listError.message;
+    console.error("sets/[id]/[algoId]: algorithm_lists query failed", listError);
+    bannerError ??= "Could not load this set.";
   }
 }
 

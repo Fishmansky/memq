@@ -24,7 +24,12 @@ if (supabase) {
     .single();
 
   if (listError) {
-    bannerError = listError.message;
+    // Logged, not rendered — and never put in the redirect query string below,
+    // where it would land in browser history and any proxy log. `.single()`
+    // also errors on zero rows, so an id the caller cannot see arrives here
+    // too; both cases collapse to the same generic message on purpose.
+    console.error("sets/[id]: algorithm_lists query failed", listError);
+    bannerError = "Could not load this set.";
   } else {
     list = listData;
     const { data: algoData, error: algoError } = await supabase
@@ -34,12 +39,15 @@ if (supabase) {
       .order("position", { ascending: true });
 
     algorithms = algoData ?? [];
-    bannerError = algoError?.message ?? null;
+    if (algoError) {
+      console.error("sets/[id]: algorithms query failed", algoError);
+      bannerError = "Could not load the algorithms in this set.";
+    }
   }
 }
 
 if (!list) {
-  return Astro.redirect("/dashboard?error=" + encodeURIComponent(bannerError ?? "Set not found"));
+  return Astro.redirect("/dashboard?error=" + encodeURIComponent("Set not found"));
 }
 
 // Only a list the caller owns gets the entry form. RLS already guarantees they
