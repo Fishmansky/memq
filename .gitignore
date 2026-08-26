@@ -42,3 +42,4 @@ CLAUDE.md.scaffold
 playwright/.auth
 test-results/
 playwright-report/
+.playwright-cli/
