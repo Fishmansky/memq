@@ -19,6 +19,10 @@ jobs:
       - run: npx astro sync
       - run: npm run typecheck
       - run: npm run lint
+      # jsdom unit suite (vitest). The integration suite is NOT run here: it needs
+      # SUPABASE_SERVICE_ROLE_KEY, which this workflow does not supply, and pointing
+      # it at the shared remote project would make runs order-dependent.
+      - run: npm test
       - run: npm run build
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}

@@ -30,6 +30,10 @@ test("a clean practice run reaches the clean-run banner", async ({ page }) => {
     await page.getByRole("button", { name: move, exact: true }).click();
   }
 
-  // Wait for the persisted result, not a timeout: the clean-run banner.
-  await expect(page.getByText(/Consecutive clean: \d+\./)).toBeVisible();
+  // Wait for the persisted result, not a timeout: a clean-run banner. Either
+  // form counts — at 3 consecutive cleans "You're PRO! 🏆" REPLACES the count,
+  // and this spec deliberately does not reset the streak first (see
+  // E2E_RULES.md). A dirty run says "Streak reset.", so the assertion still
+  // fails if a wrong move were accepted as correct.
+  await expect(page.getByText(/Consecutive clean: \d+\.|You're PRO! 🏆/)).toBeVisible();
 });

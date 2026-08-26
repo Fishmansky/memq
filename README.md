@@ -55,6 +55,30 @@ npm run dev
 - `npm run lint` - Run ESLint with type-checked rules
 - `npm run lint:fix` - Auto-fix ESLint issues
 - `npm run format` - Run Prettier
+- `npm test` - Run the jsdom unit suite (vitest)
+- `npm run test:integration` - Run the DB-backed integration suite (needs `.env.test`)
+- `npm run test:e2e` - Run the Playwright E2E suite
+
+## Testing
+
+| Suite | Command | Environment it needs |
+| ----- | ------- | -------------------- |
+| Unit (jsdom, vitest) | `npm test` | none |
+| Integration (DB-backed) | `npm run test:integration` | `.env.test`: `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` — point these at a local stack (`npx supabase start`), never at a shared project |
+| E2E (Playwright) | `npm run test:e2e` | `.env.e2e`: `E2E_USERNAME` / `E2E_PASSWORD` for a confirmed user (see `.env.e2e.example`), plus `SUPABASE_URL` / `SUPABASE_KEY` in `.dev.vars` |
+
+Notes for E2E:
+
+- The Playwright `webServer` runs `npm run build && npm run preview`, so specs run
+  against the **built** worker. App-code changes are invisible until a rebuild.
+- Specs authenticate against the **remote** Supabase project `.dev.vars` points at,
+  and write real rows there. `custom-list-algorithm-entry.spec.ts` cleans up after
+  itself using the E2E user's own session (the `al_delete` / `alg_delete` RLS
+  policies) — it reads `SUPABASE_URL` / `SUPABASE_KEY` from `.dev.vars` and the
+  credentials from `.env.e2e`; no service-role key is required. A killed run can
+  leave `algorithm_lists` rows named `e2e-cle-*` behind.
+- CI runs lint, typecheck, `npm test`, and build. The integration and E2E suites are
+  not run in CI (they need DB credentials CI does not supply).
 
 ## Project Structure
 

@@ -448,6 +448,33 @@ Each assertion must fail if the risk materializes — verify by deliberately bre
 - Deliberate-break check: temporarily relax `alg_select` to `USING (true)` locally and confirm the cross-user read and FR-015 scope tests both fail; restore the policy and confirm they pass again (record which policy was broken and what failed)
 - After a full run, a service-role query shows no leftover `algorithm_lists` or `algorithms` rows for the throwaway users
 
+### Break-check outcome (recorded during Phase 5)
+
+The prediction above — that relaxing `alg_select` alone turns the FR-015 scope test red — **is wrong**. That test's query mirrors `addAlgorithm.ts` and carries `algorithm_lists!inner(...)`, so the embedded join is still filtered by `al_select`: B's list stays invisible to A and the row drops out of the join even with `alg_select` wide open.
+
+| DB state | Failing tests |
+|---|---|
+| `alg_select` → `USING (true)` | 1 — cross-user read |
+| `alg_select` **and** `al_select` → `USING (true)` | 3 — `al_select`, cross-user read, FR-015 scope |
+| both restored | 0 (18/18 green) |
+
+So the FR-015 risk is guarded by **`al_select` ∧ `alg_select`** (defense in depth), not by `alg_select` alone. The tests have teeth; the plan's attribution of *which* policy carries them was wrong. Pinning `alg_select` in isolation would need a join-free duplicate query — deliberately **not** added here, since it would widen the Phase 5 diff. Generalized in `context/foundation/lessons.md` ("An RLS break-check must relax every policy the query touches").
+
+Commands to reproduce locally (prefix with `!` if the auto-mode classifier denies the DB mutation):
+
+```
+docker exec supabase_db_10x-astro-starter psql -U postgres -d postgres -c "ALTER POLICY alg_select ON public.algorithms USING (true);"
+docker exec supabase_db_10x-astro-starter psql -U postgres -d postgres -c "ALTER POLICY al_select ON public.algorithm_lists USING (true);"
+npx vitest run --config vitest.config.integration.ts src/test/integration/listIsolation.int.test.ts
+docker exec supabase_db_10x-astro-starter psql -U postgres -d postgres -c "ALTER POLICY alg_select ON public.algorithms USING (EXISTS (SELECT 1 FROM public.algorithm_lists l WHERE l.id = algorithms.list_id AND (l.is_system = true OR l.user_id = auth.uid())));" -c "ALTER POLICY al_select ON public.algorithm_lists USING (is_system = true OR user_id = auth.uid());"
+```
+
+`npx supabase db reset` also restores both. Verify the restored `qual` against `supabase/migrations/20260527000000_domain_schema_rls.sql:57-59,78-87` via `pg_policies`.
+
+### Plan adaptation made during Phase 5
+
+The contract above puts both per-user lists in `beforeAll`. `afterEach` cleanup deletes exactly those lists, so the lists **and** B's private algorithm moved to `beforeEach`; the users stay in `beforeAll`. Same intent (every test standalone) — noted in a comment at `src/test/integration/listIsolation.int.test.ts:95-97`.
+
 **Implementation Note**: After completing this phase and all automated verification passes, pause for manual confirmation before proceeding.
 
 ---
@@ -640,27 +667,27 @@ Per the repo convention established in `context/archive/2026-08-24-rotation-nota
 
 #### Automated
 
-- [x] 5.1 Integration suite passes: `npm run test:integration`
-- [x] 5.2 Unit tests pass: `npm test`
-- [x] 5.3 Type checking passes: `npm run typecheck`
-- [x] 5.4 Linting passes: `npm run lint`
+- [x] 5.1 Integration suite passes: `npm run test:integration` — 396510d
+- [x] 5.2 Unit tests pass: `npm test` — 396510d
+- [x] 5.3 Type checking passes: `npm run typecheck` — 396510d
+- [x] 5.4 Linting passes: `npm run lint` — 396510d
 
 #### Manual
 
-- [x] 5.5 Deliberate-break check: relaxing `alg_select` fails the cross-user read test; the FR-015 scope test is guarded by `al_select` AND `alg_select` (its query joins `algorithm_lists!inner`) and goes red when both are relaxed; restoring both passes all 9
-- [x] 5.6 Service-role query shows no leftover throwaway `algorithm_lists` / `algorithms` rows after a full run
+- [x] 5.5 Deliberate-break check: relaxing `alg_select` fails the cross-user read test; the FR-015 scope test is guarded by `al_select` AND `alg_select` (its query joins `algorithm_lists!inner`) and goes red only when both are relaxed; restoring both passes all 9. Full table, correction, and restore commands: [Break-check outcome](#break-check-outcome-recorded-during-phase-5) — 396510d
+- [x] 5.6 Service-role query shows no leftover throwaway `algorithm_lists` / `algorithms` rows after a full run — 396510d
 
 ### Phase 6: E2E coverage and CI wiring
 
 #### Automated
 
-- [ ] 6.1 E2E suite passes: `npm run test:e2e`
-- [ ] 6.2 Unit tests pass: `npm test`
-- [ ] 6.3 Full CI sequence passes locally: `npm run typecheck && npm run lint && npm test && npm run build`
-- [ ] 6.4 `grep -n "npm test" .github/workflows/ci.yml` returns a match
+- [x] 6.1 E2E suite passes: `npm run test:e2e`
+- [x] 6.2 Unit tests pass: `npm test`
+- [x] 6.3 Full CI sequence passes locally: `npm run typecheck && npm run lint && npm test && npm run build`
+- [x] 6.4 `grep -n "npm test" .github/workflows/ci.yml` returns a match
 
 #### Manual
 
-- [ ] 6.5 CI run on the PR shows the test step executing and passing
-- [ ] 6.6 Deliberate-break check: reverting the `dashboard.astro` filter change fails the dashboard E2E scenario; restoring passes it
-- [ ] 6.7 Service-role query shows no leftover timestamped rows in the remote project after an E2E run
+- [x] 6.5 CI run on the PR shows the test step executing and passing
+- [x] 6.6 Deliberate-break check: reverting the `dashboard.astro` filter change fails the dashboard E2E scenario; restoring passes it — re-adding `.eq("is_system", true)` turned exactly the dashboard scenario red (1 failed / 3 passed) at the list-link assertion; revert → 4 passed
+- [x] 6.7 Service-role query shows no leftover timestamped rows in the remote project after an E2E run — read via the E2E user's own RLS-scoped session instead (no remote service-role key exists locally): 4 system lists / 127 algorithms, zero `e2e-cle-*` rows, after both the green run and the broken run
