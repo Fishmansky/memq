@@ -583,33 +583,33 @@ Per the repo convention established in `context/archive/2026-08-24-rotation-nota
 
 #### Automated
 
-- [x] 2.1 Migration applies cleanly: `npx supabase db reset`
-- [x] 2.2 Regenerating `src/db/database.types.ts` produces no diff
-- [x] 2.3 Type checking passes: `npm run typecheck`
-- [x] 2.4 Integration suite passes: `npm run test:integration`
-- [x] 2.5 Unit tests still pass: `npm test`
-- [x] 2.6 `npx supabase db push` reports no pending migrations on a second run
-- [x] 2.7 `algorithms_moves_normalized_idx` present and `algorithms_moves_idx` gone (`pg_indexes`)
+- [x] 2.1 Migration applies cleanly: `npx supabase db reset` — faaf66c
+- [x] 2.2 Regenerating `src/db/database.types.ts` produces no diff — faaf66c
+- [x] 2.3 Type checking passes: `npm run typecheck` — faaf66c
+- [x] 2.4 Integration suite passes: `npm run test:integration` — faaf66c
+- [x] 2.5 Unit tests still pass: `npm test` — faaf66c
+- [x] 2.6 `npx supabase db push` reports no pending migrations on a second run — faaf66c
+- [x] 2.7 `algorithms_moves_normalized_idx` present and `algorithms_moves_idx` gone (`pg_indexes`) — faaf66c
 
 #### Manual
 
-- [x] 2.8 Seeded row with parentheses shows stripped, single-spaced `moves_normalized` and unchanged `moves`
-- [x] 2.9 `EXPLAIN` on the normalized equality query shows an index scan
-- [x] 2.10 Both new columns present on the **remote** project (Studio or service-role select) — Phases 3, 4, 6 verify against it
+- [x] 2.8 Seeded row with parentheses shows stripped, single-spaced `moves_normalized` and unchanged `moves` — faaf66c
+- [x] 2.9 `EXPLAIN` on the normalized equality query shows an index scan — faaf66c
+- [x] 2.10 Both new columns present on the **remote** project (Studio or service-role select) — Phases 3, 4, 6 verify against it — faaf66c
 
 ### Phase 3: Server — list and algorithm creation
 
 #### Automated
 
-- [ ] 3.1 Unit tests pass: `npm test`
-- [ ] 3.2 Type checking passes: `npm run typecheck`
-- [ ] 3.3 Linting passes: `npm run lint`
-- [ ] 3.4 Build passes: `npm run build`
-- [ ] 3.5 `grep -rn "error.message" src/lib/lists/ src/pages/api/lists/` returns nothing
+- [x] 3.1 Unit tests pass: `npm test`
+- [x] 3.2 Type checking passes: `npm run typecheck`
+- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.4 Build passes: `npm run build`
+- [x] 3.5 `grep -rn "error.message" src/lib/lists/ src/pages/api/lists/` returns nothing
 
 #### Manual
 
-- [ ] 3.6 `POST /api/lists` without a session returns `401`
+- [x] 3.6 `POST /api/lists` without a session returns `401`
 - [ ] 3.7 Create list → `201`; add algorithm → `201`; resubmit same sequence → `duplicate` naming the match
 - [ ] 3.8 Sequence matching a seeded pre-built algorithm returns `duplicate` with that algorithm
 - [ ] 3.9 `R2'` returns `400` naming the token
