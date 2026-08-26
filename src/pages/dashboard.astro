@@ -1,21 +1,24 @@
 ---
 import AppLayout from "@/layouts/AppLayout.astro";
 import SetCard from "@/components/app/SetCard.astro";
+import CreateListForm from "@/components/app/CreateListForm";
 import { createClient } from "@/lib/supabase";
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 
 const errorParam = Astro.url.searchParams.get("error");
 
-let sets: { id: string; name: string }[] = [];
+// No is_system filter: al_select already restricts this to pre-built lists plus
+// the caller's own, so dropping the filter is what makes custom lists visible
+// without widening access.
+let sets: { id: string; name: string; is_system: boolean }[] = [];
 let queryError: string | null = null;
 let bannerError: string | null = null;
 
 if (supabase) {
   const { data, error } = await supabase
     .from("algorithm_lists")
-    .select("id, name")
-    .eq("is_system", true)
+    .select("id, name, is_system")
     .order("created_at", { ascending: true });
 
   if (error) {
@@ -24,6 +27,9 @@ if (supabase) {
     sets = data;
   }
 }
+
+const prebuiltSets = sets.filter((set) => set.is_system);
+const myLists = sets.filter((set) => !set.is_system);
 
 bannerError = errorParam ?? queryError;
 ---
@@ -36,15 +42,35 @@ bannerError = errorParam ?? queryError;
       </div>
     )
   }
-  {
-    sets.length === 0 && !queryError ? (
-      <p class="text-blue-100/50">No pre-built sets found.</p>
-    ) : (
-      <div class="grid gap-4 sm:grid-cols-3">
-        {sets.map((set) => (
-          <SetCard id={set.id} name={set.name} />
-        ))}
-      </div>
-    )
-  }
+
+  <section class="mb-10">
+    <h2 class="mb-4 text-xl font-semibold text-white">Algorithm Sets</h2>
+    {
+      prebuiltSets.length === 0 && !queryError ? (
+        <p class="text-blue-100/50">No pre-built sets found.</p>
+      ) : (
+        <div class="grid gap-4 sm:grid-cols-3">
+          {prebuiltSets.map((set) => (
+            <SetCard id={set.id} name={set.name} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+
+  <section>
+    <h2 class="mb-4 text-xl font-semibold text-white">My Lists</h2>
+    {
+      myLists.length === 0 && !queryError ? (
+        <p class="mb-6 text-blue-100/50">You don't have any lists yet. Create one to add your own algorithms.</p>
+      ) : (
+        <div class="mb-6 grid gap-4 sm:grid-cols-3">
+          {myLists.map((set) => (
+            <SetCard id={set.id} name={set.name} />
+          ))}
+        </div>
+      )
+    }
+    <CreateListForm client:load />
+  </section>
 </AppLayout>

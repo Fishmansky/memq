@@ -601,40 +601,40 @@ Per the repo convention established in `context/archive/2026-08-24-rotation-nota
 
 #### Automated
 
-- [x] 3.1 Unit tests pass: `npm test`
-- [x] 3.2 Type checking passes: `npm run typecheck`
-- [x] 3.3 Linting passes: `npm run lint`
-- [x] 3.4 Build passes: `npm run build`
-- [x] 3.5 `grep -rn "error.message" src/lib/lists/ src/pages/api/lists/` returns nothing
+- [x] 3.1 Unit tests pass: `npm test` — b5b6528
+- [x] 3.2 Type checking passes: `npm run typecheck` — b5b6528
+- [x] 3.3 Linting passes: `npm run lint` — b5b6528
+- [x] 3.4 Build passes: `npm run build` — b5b6528
+- [x] 3.5 `grep -rn "error.message" src/lib/lists/ src/pages/api/lists/` returns nothing — b5b6528
 
 #### Manual
 
-- [x] 3.6 `POST /api/lists` without a session returns `401`
-- [ ] 3.7 Create list → `201`; add algorithm → `201`; resubmit same sequence → `duplicate` naming the match
-- [ ] 3.8 Sequence matching a seeded pre-built algorithm returns `duplicate` with that algorithm
-- [ ] 3.9 `R2'` returns `400` naming the token
-- [ ] 3.10 Adding to another account's list id returns `403`
+- [x] 3.6 `POST /api/lists` without a session returns `401` — b5b6528
+- [x] 3.7 Create list → `201`; add algorithm → `201`; resubmit same sequence → `duplicate` naming the match
+- [x] 3.8 Sequence matching a seeded pre-built algorithm returns `duplicate` with that algorithm
+- [x] 3.9 `R2'` returns `400` naming the token
+- [x] 3.10 Adding to another account's list id returns `403`
 
 ### Phase 4: UI — dashboard visibility and entry forms
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npm run typecheck`
-- [ ] 4.2 Linting passes: `npm run lint`
-- [ ] 4.3 Build passes: `npm run build`
-- [ ] 4.4 Unit tests pass: `npm test`
-- [ ] 4.5 `grep -n 'eq("is_system", true)' src/pages/dashboard.astro` returns nothing
+- [x] 4.1 Type checking passes: `npm run typecheck`
+- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.3 Build passes: `npm run build`
+- [x] 4.4 Unit tests pass: `npm test`
+- [x] 4.5 `grep -n 'eq("is_system", true)' src/pages/dashboard.astro` returns nothing
 
 #### Manual
 
-- [ ] 4.6 Dashboard shows pre-built sets and a separate "My Lists" section containing a new list
-- [ ] 4.7 Creating a list navigates to its set page, which shows the add-algorithm form
-- [ ] 4.8 A pre-built set page shows no add-algorithm form
-- [ ] 4.9 Adding `R U R' U'` puts it in the list
-- [ ] 4.10 Seeded sequence surfaces the duplicate panel; "Add this one" adds it; "Create separate entry" creates a distinct row
-- [ ] 4.11 Same sequence twice into one list reports "already in this list"
-- [ ] 4.12 `R2'` shows the form error and issues no request
-- [ ] 4.13 Practicing a custom-list algorithm works via `/sets/[id]/[algoId]`
+- [x] 4.6 Dashboard shows pre-built sets and a separate "My Lists" section containing a new list
+- [x] 4.7 Creating a list navigates to its set page, which shows the add-algorithm form
+- [x] 4.8 A pre-built set page shows no add-algorithm form
+- [x] 4.9 Adding `R U R' U'` puts it in the list
+- [x] 4.10 Seeded sequence surfaces the duplicate panel; "Add this one" adds it; "Create separate entry" creates a distinct row
+- [x] 4.11 Same sequence twice into one list reports "already in this list"
+- [x] 4.12 `R2'` shows the form error and issues no request
+- [x] 4.13 Practicing a custom-list algorithm works via `/sets/[id]/[algoId]`
 
 ### Phase 5: Two-account isolation tests
 
