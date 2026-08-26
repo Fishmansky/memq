@@ -61,3 +61,10 @@
 **Rule:** When a test or manual check depends on seeded content, state which corpus it assumes. Do not conclude "no pre-built match exists" from a local run — verify against the remote row set, or add the row the test needs as an explicit fixture rather than leaning on the seed.
 
 **Applies to:** Integration tests and manual verification steps that read `is_system` lists or their algorithms; any assertion about duplicate detection against pre-built sequences.
+
+## Never use a value assertion as a hydration probe
+
+- **Context**: Any Playwright spec that types into a form rendered by an Astro `client:*` island (`auth.setup.ts`, `CreateListForm`, `AddAlgorithmForm`), and any E2E readiness check on a partially-hydrated page.
+- **Problem**: A `fill` before hydration writes the DOM value but never reaches React state, and React 19 leaves that existing value alone when it mounts a controlled input — so `toHaveValue` passes while state is still `""`. The submit then fails validation with an empty-field error that reads as an app bug. `auth.setup.ts` flaked this way intermittently ("Email is required" with the password visibly filled); both add-algorithm fields hit it on the first run of the custom-list spec. The deeper cause: the `expect(...).toPass()` retry could never converge, because its condition was already satisfied by the broken state.
+- **Rule**: Never treat a value assertion as proof that a controlled input is hydrated — wait on the framework's own hydration signal (zero `astro-island[ssr]` nodes; the custom element drops the attribute after its hydrator resolves). More generally: a retry loop whose condition is satisfiable by the broken state proves nothing.
+- **Applies to**: e2e, implement, impl-review
