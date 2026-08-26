@@ -568,34 +568,34 @@ Per the repo convention established in `context/archive/2026-08-24-rotation-nota
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npm test`
-- [x] 1.2 Type checking passes: `npm run typecheck`
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Build passes: `npm run build`
-- [x] 1.5 `grep -r "@/test/tokenGrammar" src/` returns nothing
-- [x] 1.6 `grep -n "components" src/lib/notation/moveGrammar.ts` returns nothing
+- [x] 1.1 Unit tests pass: `npm test` — 940c930
+- [x] 1.2 Type checking passes: `npm run typecheck` — 940c930
+- [x] 1.3 Linting passes: `npm run lint` — 940c930
+- [x] 1.4 Build passes: `npm run build` — 940c930
+- [x] 1.5 `grep -r "@/test/tokenGrammar" src/` returns nothing — 940c930
+- [x] 1.6 `grep -n "components" src/lib/notation/moveGrammar.ts` returns nothing — 940c930
 
 #### Manual
 
-- [x] 1.7 Practice session on a seeded algorithm still accepts moves and completes as before
+- [x] 1.7 Practice session on a seeded algorithm still accepts moves and completes as before — 940c930
 
 ### Phase 2: Migration — normalized column + provenance
 
 #### Automated
 
-- [ ] 2.1 Migration applies cleanly: `npx supabase db reset`
-- [ ] 2.2 Regenerating `src/db/database.types.ts` produces no diff
-- [ ] 2.3 Type checking passes: `npm run typecheck`
-- [ ] 2.4 Integration suite passes: `npm run test:integration`
-- [ ] 2.5 Unit tests still pass: `npm test`
-- [ ] 2.6 `npx supabase db push` reports no pending migrations on a second run
-- [ ] 2.7 `algorithms_moves_normalized_idx` present and `algorithms_moves_idx` gone (`pg_indexes`)
+- [x] 2.1 Migration applies cleanly: `npx supabase db reset`
+- [x] 2.2 Regenerating `src/db/database.types.ts` produces no diff
+- [x] 2.3 Type checking passes: `npm run typecheck`
+- [x] 2.4 Integration suite passes: `npm run test:integration`
+- [x] 2.5 Unit tests still pass: `npm test`
+- [x] 2.6 `npx supabase db push` reports no pending migrations on a second run
+- [x] 2.7 `algorithms_moves_normalized_idx` present and `algorithms_moves_idx` gone (`pg_indexes`)
 
 #### Manual
 
-- [ ] 2.8 Seeded row with parentheses shows stripped, single-spaced `moves_normalized` and unchanged `moves`
-- [ ] 2.9 `EXPLAIN` on the normalized equality query shows an index scan
-- [ ] 2.10 Both new columns present on the **remote** project (Studio or service-role select) — Phases 3, 4, 6 verify against it
+- [x] 2.8 Seeded row with parentheses shows stripped, single-spaced `moves_normalized` and unchanged `moves`
+- [x] 2.9 `EXPLAIN` on the normalized equality query shows an index scan
+- [x] 2.10 Both new columns present on the **remote** project (Studio or service-role select) — Phases 3, 4, 6 verify against it
 
 ### Phase 3: Server — list and algorithm creation
 
