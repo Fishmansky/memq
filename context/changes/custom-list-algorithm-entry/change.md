@@ -1,7 +1,7 @@
 ---
 change_id: custom-list-algorithm-entry
 title: Let users create custom algorithms in a private personal list
-status: implementing
+status: implemented
 created: 2026-08-25
 updated: 2026-08-26
 archived_at: null

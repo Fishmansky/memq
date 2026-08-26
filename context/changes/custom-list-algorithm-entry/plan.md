@@ -681,13 +681,13 @@ Per the repo convention established in `context/archive/2026-08-24-rotation-nota
 
 #### Automated
 
-- [x] 6.1 E2E suite passes: `npm run test:e2e`
-- [x] 6.2 Unit tests pass: `npm test`
-- [x] 6.3 Full CI sequence passes locally: `npm run typecheck && npm run lint && npm test && npm run build`
-- [x] 6.4 `grep -n "npm test" .github/workflows/ci.yml` returns a match
+- [x] 6.1 E2E suite passes: `npm run test:e2e` — 1832a3d
+- [x] 6.2 Unit tests pass: `npm test` — 1832a3d
+- [x] 6.3 Full CI sequence passes locally: `npm run typecheck && npm run lint && npm test && npm run build` — 1832a3d
+- [x] 6.4 `grep -n "npm test" .github/workflows/ci.yml` returns a match — 1832a3d
 
 #### Manual
 
-- [x] 6.5 CI run on the PR shows the test step executing and passing
-- [x] 6.6 Deliberate-break check: reverting the `dashboard.astro` filter change fails the dashboard E2E scenario; restoring passes it — re-adding `.eq("is_system", true)` turned exactly the dashboard scenario red (1 failed / 3 passed) at the list-link assertion; revert → 4 passed
-- [x] 6.7 Service-role query shows no leftover timestamped rows in the remote project after an E2E run — read via the E2E user's own RLS-scoped session instead (no remote service-role key exists locally): 4 system lists / 127 algorithms, zero `e2e-cle-*` rows, after both the green run and the broken run
+- [x] 6.5 CI run on the PR shows the test step executing and passing — 1832a3d
+- [x] 6.6 Deliberate-break check: reverting the `dashboard.astro` filter change fails the dashboard E2E scenario; restoring passes it — re-adding `.eq("is_system", true)` turned exactly the dashboard scenario red (1 failed / 3 passed) at the list-link assertion; revert → 4 passed — 1832a3d
+- [x] 6.7 Service-role query shows no leftover timestamped rows in the remote project after an E2E run — read via the E2E user's own RLS-scoped session instead (no remote service-role key exists locally): 4 system lists / 127 algorithms, zero `e2e-cle-*` rows, after both the green run and the broken run — 1832a3d
