@@ -1,13 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { CENTRAL_GRID, type GridCell, KEY_TO_MOVE, ROTATION_GRID, SIDE_GRID } from "@/components/app/PracticeSession";
-import { DOUBLE_SENTINEL, KEYBOARD_BASE_TOKENS, KEYBOARD_WITH_WIDE_TOKENS, WIDE_SENTINEL } from "@/test/tokenGrammar";
+import { CENTRAL_GRID, type GridCell, ROTATION_GRID, SIDE_GRID } from "@/components/app/PracticeSession";
+import {
+  DOUBLE_SENTINEL,
+  KEY_TO_MOVE,
+  KEYBOARD_BASE_TOKENS,
+  KEYBOARD_WITH_WIDE_TOKENS,
+  WIDE_SENTINEL,
+} from "@/lib/notation/moveGrammar";
 
 // A grid button emits its `move` field verbatim (label === token), so this set
 // IS the grid-emittable token set.
 const gridTokens = new Set<string>([...SIDE_GRID, ...CENTRAL_GRID, ...ROTATION_GRID].map((c: GridCell) => c.move));
 
 // Directly keyboard-typeable tokens and their wide (lowercased) forms come from
-// the shared grammar helper — see src/test/tokenGrammar.ts. Encoding the wide
+// the shared grammar module — see src/lib/notation/moveGrammar.ts. Encoding the wide
 // asymmetry is the point: a flat set-equality would false-fail, and
 // label==token is a tautology.
 

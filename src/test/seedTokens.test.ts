@@ -1,8 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { parseMoves } from "@/components/app/PracticeSession";
-import { PRODUCIBLE_TOKENS } from "@/test/tokenGrammar";
+import { PRODUCIBLE_TOKENS, parseMoves } from "@/lib/notation/moveGrammar";
 
 // Regression guard for the `R2'` / `U2'` incident: seed content containing a
 // token the app can never dispatch leaves a practice session permanently stuck

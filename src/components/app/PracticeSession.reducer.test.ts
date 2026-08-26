@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { parseMoves, reducer, type State } from "@/components/app/PracticeSession";
+import { reducer, type State } from "@/components/app/PracticeSession";
+import { parseMoves } from "@/lib/notation/moveGrammar";
 
 // Oracle is the *intended rule*, never the comparator under test: the expected
 // move at each index is hardcoded as a literal here, not read back from the

@@ -1,38 +1,8 @@
 import { useEffect, useReducer } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { Button } from "@/components/ui/button";
+import { KEY_TO_MOVE, parseMoves } from "@/lib/notation/moveGrammar";
 import { cn } from "@/lib/utils";
-
-// --- Key → move lookup table ---------------------------------------------
-// Base moves, shift-prime variants, and two modifier sentinels (w, 2).
-export const KEY_TO_MOVE: Record<string, string> = {
-  r: "R",
-  "shift+r": "R'",
-  u: "U",
-  "shift+u": "U'",
-  f: "F",
-  "shift+f": "F'",
-  l: "L",
-  "shift+l": "L'",
-  b: "B",
-  "shift+b": "B'",
-  d: "D",
-  "shift+d": "D'",
-  x: "x",
-  "shift+x": "x'",
-  y: "y",
-  "shift+y": "y'",
-  z: "z",
-  "shift+z": "z'",
-  m: "M",
-  "shift+m": "M'",
-  e: "E",
-  "shift+e": "E'",
-  s: "S",
-  "shift+s": "S'",
-  w: "__wide_modifier__", // sentinel — toggles wideModifier
-  2: "__double_modifier__", // sentinel — toggles doubleModifier
-};
 
 // --- Move-grid layouts (col/row are 0-indexed) ---------------------------
 export type NotchCorner = "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -211,10 +181,6 @@ export function reducer(state: State, action: Action, tokens: string[]): State {
 interface PracticeSessionProps {
   algorithmId: string;
   moves: string; // raw moves string from DB, e.g. "R U R' U'"
-}
-
-export function parseMoves(moves: string): string[] {
-  return moves.replace(/[()]/g, "").split(" ").filter(Boolean);
 }
 
 // --- Move grid -----------------------------------------------------------
