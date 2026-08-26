@@ -55,8 +55,34 @@ export async function deleteTestUser(svc: SupabaseClient<Database>, userId: stri
   }
 }
 
-/** Remove a user's progress rows between tests; leaves seeded algorithms intact. */
+/**
+ * Remove a user's own rows between tests; leaves pre-built content intact.
+ *
+ * Order is load-bearing. The user's `algorithms` go before their
+ * `algorithm_lists` (child rows first — the FK cascade runs list → algorithms,
+ * not the other way), and both go before `practice_sessions` /
+ * `algorithm_mastery`: any progress row pointing at a deleted custom algorithm
+ * cascades away with it, and the trailing per-user deletes then sweep whatever
+ * sat on pre-built algorithms.
+ */
 export async function cleanupUserRows(svc: SupabaseClient<Database>, userId: string): Promise<void> {
+  const lists = await svc.from("algorithm_lists").select("id").eq("user_id", userId);
+  if (lists.error) {
+    throw lists.error;
+  }
+  const listIds = lists.data.map((row) => row.id);
+  if (listIds.length > 0) {
+    // Guarded: `.in("list_id", [])` is not a no-op filter in PostgREST.
+    const algorithms = await svc.from("algorithms").delete().in("list_id", listIds);
+    if (algorithms.error) {
+      throw algorithms.error;
+    }
+    const ownedLists = await svc.from("algorithm_lists").delete().eq("user_id", userId);
+    if (ownedLists.error) {
+      throw ownedLists.error;
+    }
+  }
+
   const sessions = await svc.from("practice_sessions").delete().eq("user_id", userId);
   if (sessions.error) {
     throw sessions.error;
@@ -65,6 +91,30 @@ export async function cleanupUserRows(svc: SupabaseClient<Database>, userId: str
   if (mastery.error) {
     throw mastery.error;
   }
+}
+
+/**
+ * Fixture: create a private, user-owned list for `userId` via the service
+ * client. Setup only — the RLS-governed create path is exercised by the specs
+ * that assert on it, not by this helper.
+ *
+ * `is_system: false` and a non-null `user_id` are required *together* by
+ * `algorithm_lists_ownership_check`.
+ */
+export async function createList(
+  svc: SupabaseClient<Database>,
+  userId: string,
+  name = `int-test-list-${crypto.randomUUID()}`,
+): Promise<string> {
+  const { data, error } = await svc
+    .from("algorithm_lists")
+    .insert({ name, user_id: userId, is_system: false })
+    .select("id")
+    .single();
+  if (error) {
+    throw error;
+  }
+  return data.id;
 }
 
 /**
