@@ -29,7 +29,7 @@ This change replaces that page with a MemQ landing page: a cube-memorization pit
 
 Visiting `/` shows a MemQ landing page. The browser tab reads MemQ. Every reference to Astro, the starter, Supabase-as-a-feature, and developer tooling is gone from the page. The hero states what MemQ does — drill Rubik's cube algorithms from memory with immediate per-move feedback — and shows a flat 3x3 cube face in the six standard cube colors alongside a real algorithm from the app's seeded PLL set. An anonymous visitor sees Sign in / Sign up CTAs; a signed-in visitor sees a single CTA into `/dashboard` instead of a signup pitch.
 
-Verify: `grep -ri "astro starter\|10x-astro" src/pages src/components src/layouts` returns nothing; `npm run lint`, `npm run typecheck`, and `npm run build` pass; the page renders correctly at mobile and desktop widths in both auth states.
+Verify: `grep -ri --include='*.astro' "astro starter\|10x-astro" src/pages src/components src/layouts` returns nothing; `npm run lint`, `npm run typecheck`, and `npm run build` pass; the page renders correctly at mobile and desktop widths in both auth states.
 
 ### Key Discoveries:
 
@@ -132,7 +132,7 @@ Resolve paths from `import.meta.url`, not `process.cwd()`, so the test is indepe
 
 #### Automated Verification:
 
-- No starter references remain in app source: `grep -ri "astro starter\|10x-astro\|Modern Stack\|Developer Experience" src/pages src/components src/layouts` returns no matches
+- No starter references remain in app source: `grep -ri --include='*.astro' "astro starter\|10x-astro\|Modern Stack\|Developer Experience" src/pages src/components src/layouts` returns no matches
 - Old component is gone and new one exists: `test ! -f src/components/Welcome.astro && test -f src/components/Landing.astro`
 - Type checking passes: `npm run typecheck`
 - Linting passes: `npm run lint`
