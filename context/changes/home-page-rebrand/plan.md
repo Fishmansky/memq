@@ -249,37 +249,37 @@ None. No schema change, no data change, no stored state, and no URL change. Reve
 
 #### Automated
 
-- [x] 1.1 No starter references remain in app source
-- [x] 1.2 Old component is gone and new one exists
-- [x] 1.3 Type checking passes: `npm run typecheck`
-- [x] 1.4 Linting passes: `npm run lint`
-- [x] 1.5 Production build succeeds: `npm run build`
-- [x] 1.6 Unit suite passes, including the new landing-page source guard: `npm test`
+- [x] 1.1 No starter references remain in app source — 802f68d
+- [x] 1.2 Old component is gone and new one exists — 802f68d
+- [x] 1.3 Type checking passes: `npm run typecheck` — 802f68d
+- [x] 1.4 Linting passes: `npm run lint` — 802f68d
+- [x] 1.5 Production build succeeds: `npm run build` — 802f68d
+- [x] 1.6 Unit suite passes, including the new landing-page source guard: `npm test` — 802f68d
 
 #### Manual
 
-- [x] 1.7 Anonymous `/` shows MemQ hero copy with working Sign in / Sign up CTAs
-- [x] 1.8 Signed-in `/` shows the single "Go to my sets" CTA to `/dashboard`
-- [x] 1.9 Browser tab on `/` reads MemQ
-- [x] 1.10 Hero copy claims nothing the app doesn't do
-- [x] 1.11 Layout holds at ~375px and at desktop width
-- [x] 1.12 `/dashboard` and `/sets/*` are visually unchanged
+- [x] 1.7 Anonymous `/` shows MemQ hero copy with working Sign in / Sign up CTAs — 802f68d
+- [x] 1.8 Signed-in `/` shows the single "Go to my sets" CTA to `/dashboard` — 802f68d
+- [x] 1.9 Browser tab on `/` reads MemQ — 802f68d
+- [x] 1.10 Hero copy claims nothing the app doesn't do — 802f68d
+- [x] 1.11 Layout holds at ~375px and at desktop width — 802f68d
+- [x] 1.12 `/dashboard` and `/sets/*` are visually unchanged — 802f68d
 
 ### Phase 2: Cube visual and notation
 
 #### Automated
 
-- [ ] 2.1 Notation renders through the shared `MoveSequence` component
-- [ ] 2.2 Type checking passes: `npm run typecheck`
-- [ ] 2.3 Linting passes: `npm run lint`
-- [ ] 2.4 Production build succeeds: `npm run build`
-- [ ] 2.5 Existing unit suite still passes: `npm test`
+- [x] 2.1 Notation renders through the shared `MoveSequence` component
+- [x] 2.2 Type checking passes: `npm run typecheck`
+- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.4 Production build succeeds: `npm run build`
+- [x] 2.5 Existing unit suite still passes: `npm test`
 
 #### Manual
 
-- [ ] 2.6 Cube face renders as nine aligned tiles at mobile and desktop widths
-- [ ] 2.7 Notation chips read `M2 U M U2 M' U M2` with the prime rendered correctly
-- [ ] 2.8 Cube face and hero text coexist without crowding at ~375px and desktop
-- [ ] 2.9 Cube colors read as a contained object, not a palette clash
-- [ ] 2.10 Cube grid is skipped by a screen reader; algorithm name and notation are announced
-- [ ] 2.11 Both auth states still render correctly with the visual added
+- [x] 2.6 Cube face renders as nine aligned tiles at mobile and desktop widths
+- [x] 2.7 Notation chips read `M2 U M U2 M' U M2` with the prime rendered correctly
+- [x] 2.8 Cube face and hero text coexist without crowding at ~375px and desktop
+- [x] 2.9 Cube colors read as a contained object, not a palette clash
+- [x] 2.10 Cube grid is skipped by a screen reader; algorithm name and notation are announced
+- [x] 2.11 Both auth states still render correctly with the visual added

@@ -1,7 +1,14 @@
 ---
+import MoveSequence from "@/components/app/MoveSequence.astro";
 import Topbar from "@/components/Topbar.astro";
 
 const { user } = Astro.locals;
+
+// Nine tiles in the six standard cube colours, arranged as an arbitrary
+// scramble. This depicts no specific OLL/PLL case on purpose and makes no claim
+// about the algorithm shown beside it — a pictured case that did not match the
+// quoted sequence would read as a bug to an intermediate cuber.
+const CUBE_FACE = ["#FFFFFF", "#C41E3A", "#009E60", "#FF5800", "#FFD500", "#0051BA", "#009E60", "#FFFFFF", "#C41E3A"];
 ---
 
 <div class="bg-cosmic relative min-h-screen w-full overflow-hidden">
@@ -67,6 +74,35 @@ const { user } = Astro.locals;
             </>
           )
         }
+      </div>
+
+      <!-- Cube face and a real algorithm from the pre-built PLL set -->
+      <div class="mt-16 flex flex-col items-center gap-8 sm:mt-20 sm:flex-row sm:gap-10">
+        <div
+          class="shrink-0 rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl"
+          aria-hidden="true"
+          role="presentation"
+        >
+          <div class="grid grid-cols-3 gap-1.5">
+            {
+              CUBE_FACE.map((color) => (
+                <span
+                  class="block h-9 w-9 rounded ring-1 ring-black/30 ring-inset sm:h-11 sm:w-11"
+                  style={`background-color: ${color}`}
+                />
+              ))
+            }
+          </div>
+        </div>
+
+        <div class="sm:text-left">
+          <p class="mb-3 text-sm text-blue-100/60">
+            <span class="font-semibold text-white">Ua-perm</span> — one of the algorithms in the pre-built PLL set
+          </p>
+          <div class="flex justify-center sm:justify-start">
+            <MoveSequence moves="M2 U M U2 M' U M2" />
+          </div>
+        </div>
       </div>
     </div>
   </div>
