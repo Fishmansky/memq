@@ -12,8 +12,16 @@ const buttonVariants = cva(
         default: "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
-        outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
+        // NOT the shadcn default (`border bg-background hover:bg-accent
+        // hover:text-accent-foreground` + `dark:` twins). Nothing in this app
+        // sets the `.dark` class, so those tokens resolve LIGHT while
+        // AppLayout paints its own dark surface (`bg-cosmic` + `text-white`) —
+        // `bg-background` came out white, no foreground was set so the label
+        // inherited white, and the text only became legible on hover once
+        // `hover:text-accent-foreground` kicked in. Both the surface and the
+        // foreground are stated explicitly here, in the translucent-white
+        // idiom the rest of the app uses.
+        outline: "border border-white/20 bg-white/10 text-white shadow-xs hover:bg-white/20 hover:text-white",
         secondary: "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",

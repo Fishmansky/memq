@@ -2,6 +2,7 @@
 import AppLayout from "@/layouts/AppLayout.astro";
 import AlgorithmRow from "@/components/app/AlgorithmRow.astro";
 import AddAlgorithmForm from "@/components/app/AddAlgorithmForm";
+import ConfirmDelete from "@/components/app/ConfirmDelete";
 import { createClient } from "@/lib/supabase";
 
 const { id } = Astro.params;
@@ -13,7 +14,7 @@ if (!id) {
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 
 let list: { id: string; name: string; is_system: boolean; user_id: string | null } | null = null;
-let algorithms: { id: string; name: string; position: number }[] = [];
+let algorithms: { id: string; name: string }[] = [];
 let bannerError: string | null = null;
 
 if (supabase) {
@@ -32,9 +33,12 @@ if (supabase) {
     bannerError = "Could not load this set.";
   } else {
     list = listData;
+    // Ordered by `position`, but `position` itself is not selected: it is an
+    // ordering key only. Row numbers come from the array index below, so a gap
+    // left by a delete never reaches the learner.
     const { data: algoData, error: algoError } = await supabase
       .from("algorithms")
-      .select("id, name, position")
+      .select("id, name")
       .eq("list_id", id)
       .order("position", { ascending: true });
 
@@ -50,10 +54,20 @@ if (!list) {
   return Astro.redirect("/dashboard?error=" + encodeURIComponent("Set not found"));
 }
 
-// Only a list the caller owns gets the entry form. RLS already guarantees they
-// can only see their own; this decides whether the form is rendered at all, so a
-// pre-built set stays read-only.
-const canAddAlgorithms = !list.is_system && list.user_id === Astro.locals.user?.id;
+// Only a list the caller owns gets the entry form and the delete control. RLS
+// already guarantees they can only see their own, and al_delete / alg_insert
+// enforce the write side; this decides whether the controls are rendered at
+// all, so a pre-built set stays read-only.
+const canManageList = !list.is_system && list.user_id === Astro.locals.user?.id;
+
+// The prompt names the algorithm count because a list delete cascades: its
+// algorithms go with it, and their practice_sessions / algorithm_mastery rows
+// cascade again. There is no undo, so the confirm step has to say so.
+const algorithmCount = algorithms.length;
+const countPhrase = algorithmCount === 1 ? "1 algorithm" : `${String(algorithmCount)} algorithms`;
+const deletePrompt =
+  `Delete "${list.name}"? Its ${countPhrase} and all practice history for them ` +
+  "will be permanently removed. This cannot be undone.";
 ---
 
 <AppLayout title={list.name} backHref="/dashboard" backLabel="Sets">
@@ -66,12 +80,29 @@ const canAddAlgorithms = !list.is_system && list.user_id === Astro.locals.user?.
   }
   <h1 class="mb-6 text-2xl font-bold text-white">{list.name}</h1>
   <div class="flex flex-col gap-2">
-    {algorithms.map((algo) => <AlgorithmRow id={algo.id} listId={list.id} position={algo.position} name={algo.name} />)}
+    {
+      algorithms.map((algo, index) => (
+        <AlgorithmRow id={algo.id} listId={list.id} displayIndex={index + 1} name={algo.name} />
+      ))
+    }
   </div>
   {
-    canAddAlgorithms && (
+    canManageList && (
       <div class="mt-8">
         <AddAlgorithmForm listId={list.id} client:load />
+      </div>
+    )
+  }
+  {
+    canManageList && (
+      <div class="mt-10 border-t border-white/10 pt-6">
+        <ConfirmDelete
+          endpoint={`/api/lists/${list.id}`}
+          label="Delete list"
+          confirmPrompt={deletePrompt}
+          redirectTo="/dashboard"
+          client:load
+        />
       </div>
     )
   }

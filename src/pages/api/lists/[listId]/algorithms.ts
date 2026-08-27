@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { createClient } from "@/lib/supabase";
 import { addAlgorithm } from "@/lib/lists/addAlgorithm";
 import { addExistingAlgorithm } from "@/lib/lists/addExistingAlgorithm";
+import { isUuid } from "@/lib/uuid";
 
 // POST /api/lists/:listId/algorithms — one endpoint serving both add paths,
 // discriminated by body shape:
@@ -12,8 +13,6 @@ import { addExistingAlgorithm } from "@/lib/lists/addExistingAlgorithm";
 // decides whether the caller owns the target list, and a rejection maps to 403.
 // The locals.user gate is required: src/middleware.ts does not cover /api/*.
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 export const POST: APIRoute = async (context) => {
   const user = context.locals.user;
   if (!user) {
@@ -23,12 +22,10 @@ export const POST: APIRoute = async (context) => {
     });
   }
 
-  // Shape-checked, not authorized: a non-UUID reaches PostgREST as
-  // `.eq("list_id", "foo")`, Postgres raises 22P02, and the lib module's
-  // catch-all maps that to a 500 for what is plainly a bad request.
-  // Authorization stays with alg_insert either way.
+  // Shape-checked, not authorized (see src/lib/uuid.ts). Authorization stays
+  // with alg_insert either way.
   const listId = context.params.listId;
-  if (!listId || !UUID_RE.test(listId)) {
+  if (!isUuid(listId)) {
     return new Response(JSON.stringify({ error: "Invalid listId" }), {
       status: 400,
       headers: { "Content-Type": "application/json" },

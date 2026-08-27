@@ -2,18 +2,25 @@
 interface Props {
   id: string;
   listId: string;
-  position: number;
+  /**
+   * Display-only row number, NOT the stored `position` column. Deleting from
+   * the middle of a list leaves a gap in `position` (1, 2, 4) and nothing
+   * renumbers it — `position` is an ordering key only. The caller passes its
+   * array index + 1 over a `.order("position")` fetch, which is what makes the
+   * number both contiguous and meaningful.
+   */
+  displayIndex: number;
   name: string;
 }
 
-const { id, listId, position, name: algoName } = Astro.props;
+const { id, listId, displayIndex, name: algoName } = Astro.props;
 ---
 
 <a
   href={`/sets/${listId}/${id}`}
   class="flex items-center gap-4 rounded-lg border border-white/10 bg-white/5 px-4 py-3 transition-colors hover:bg-white/10"
 >
-  <span class="w-8 text-right text-sm text-white/40">{position}</span>
+  <span class="w-8 text-right text-sm text-white/40">{displayIndex}</span>
   <span class="flex-1 text-white">{algoName}</span>
   <span class="text-white/40">→</span>
 </a>
