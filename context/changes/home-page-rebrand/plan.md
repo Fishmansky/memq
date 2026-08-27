@@ -269,17 +269,17 @@ None. No schema change, no data change, no stored state, and no URL change. Reve
 
 #### Automated
 
-- [x] 2.1 Notation renders through the shared `MoveSequence` component
-- [x] 2.2 Type checking passes: `npm run typecheck`
-- [x] 2.3 Linting passes: `npm run lint`
-- [x] 2.4 Production build succeeds: `npm run build`
-- [x] 2.5 Existing unit suite still passes: `npm test`
+- [x] 2.1 Notation renders through the shared `MoveSequence` component — 2010bcf
+- [x] 2.2 Type checking passes: `npm run typecheck` — 2010bcf
+- [x] 2.3 Linting passes: `npm run lint` — 2010bcf
+- [x] 2.4 Production build succeeds: `npm run build` — 2010bcf
+- [x] 2.5 Existing unit suite still passes: `npm test` — 2010bcf
 
 #### Manual
 
-- [x] 2.6 Cube face renders as nine aligned tiles at mobile and desktop widths
-- [x] 2.7 Notation chips read `M2 U M U2 M' U M2` with the prime rendered correctly
-- [x] 2.8 Cube face and hero text coexist without crowding at ~375px and desktop
-- [x] 2.9 Cube colors read as a contained object, not a palette clash
-- [x] 2.10 Cube grid is skipped by a screen reader; algorithm name and notation are announced
-- [x] 2.11 Both auth states still render correctly with the visual added
+- [x] 2.6 Cube face renders as nine aligned tiles at mobile and desktop widths — 2010bcf
+- [x] 2.7 Notation chips read `M2 U M U2 M' U M2` with the prime rendered correctly — 2010bcf
+- [x] 2.8 Cube face and hero text coexist without crowding at ~375px and desktop — 2010bcf
+- [x] 2.9 Cube colors read as a contained object, not a palette clash — 2010bcf
+- [x] 2.10 Cube grid is skipped by a screen reader; algorithm name and notation are announced — 2010bcf
+- [x] 2.11 Both auth states still render correctly with the visual added — 2010bcf
