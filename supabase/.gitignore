@@ -6,3 +6,6 @@
 .env.keys
 .env.local
 .env.*.local
+
+# Studio SQL editor scratch snippets
+snippets
