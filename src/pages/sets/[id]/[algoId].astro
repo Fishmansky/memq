@@ -2,6 +2,7 @@
 import AppLayout from "@/layouts/AppLayout.astro";
 import PracticeSession from "@/components/app/PracticeSession";
 import ConfirmDelete from "@/components/app/ConfirmDelete";
+import EditAlgorithmForm from "@/components/app/EditAlgorithmForm";
 import { createClient } from "@/lib/supabase";
 
 const { id, algoId } = Astro.params;
@@ -76,6 +77,13 @@ const deletePrompt = `Delete "${algorithm.name}"? Its practice history will be p
   {
     canManageAlgorithm && (
       <div class="mt-10 border-t border-white/10 pt-6">
+        <EditAlgorithmForm algorithmId={algorithm.id} name={algorithm.name} moves={algorithm.moves} client:load />
+      </div>
+    )
+  }
+  {
+    canManageAlgorithm && (
+      <div class="mt-8">
         <ConfirmDelete
           endpoint={`/api/algorithms/${algorithm.id}`}
           label="Delete algorithm"

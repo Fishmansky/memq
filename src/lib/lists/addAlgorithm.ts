@@ -11,20 +11,17 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/db/database.types";
 import { validateMoves } from "@/lib/notation/moveGrammar";
 import { LIST_NAME_MAX_LENGTH } from "@/lib/lists/createList";
+import { probeDuplicates, type DuplicateMatch } from "@/lib/lists/duplicateProbe";
+
+// Re-exported: the duplicate shape moved to duplicateProbe.ts when the edit
+// path started sharing the probe, and callers keep importing it from here.
+export type { DuplicateMatch };
 
 export interface AddAlgorithmInput {
   listId: string;
   name: string;
   moves: string;
   createAnyway?: boolean;
-}
-
-export interface DuplicateMatch {
-  id: string;
-  name: string;
-  moves: string;
-  listName: string;
-  isSystem: boolean;
 }
 
 export interface AddedAlgorithm {
@@ -44,26 +41,6 @@ export type AddAlgorithmResult =
 
 // Postgres error codes surfaced through PostgREST.
 const RLS_VIOLATION = "42501";
-
-/** Shape of one row from the duplicate-detection query. */
-interface MatchRow {
-  id: string;
-  name: string;
-  moves: string;
-  list_id: string;
-  algorithm_lists: { name: string; is_system: boolean };
-}
-
-function toMatch(row: MatchRow): DuplicateMatch {
-  // Flatten the embedded list out, so the client never sees the join shape.
-  return {
-    id: row.id,
-    name: row.name,
-    moves: row.moves,
-    listName: row.algorithm_lists.name,
-    isSystem: row.algorithm_lists.is_system,
-  };
-}
 
 /**
  * Add an algorithm to a list by name + move sequence, with FR-015 duplicate
@@ -98,50 +75,29 @@ export async function addAlgorithm(
     return { status: 400, body: { error: validation.error } };
   }
 
-  // 2. Duplicate detection, scoped by RLS. `alg_select` already resolves to
-  // exactly FR-015's "pre-built OR in any of the caller's lists" — no
-  // hand-rolled ownership filter, and none that widens it either.
-  //
-  // N matches is normal, not an edge case (the seeded PLL set has a T-perm and
-  // the learner may hold the same sequence in two of their own lists), so the
-  // order is pinned: pre-built first, then oldest first as a stable tiebreak.
-  //
-  // NOTE the exact order syntax. `.order("is_system", { referencedTable:
-  // "algorithm_lists" })` — the form that looks right — is a SILENT NO-OP here:
-  // it returns 200 with rows in unspecified order, because referencedTable
-  // orders rows *within* a to-many embed rather than ordering parents by a
-  // to-one embedded column. The composite-column form below is what PostgREST
-  // actually honours (order=algorithm_lists(is_system).desc). Verified against a
-  // live stack; if this is ever "tidied up", determinism is lost with no error.
-  const { data: matches, error: matchError } = await supabase
-    .from("algorithms")
-    .select("id, name, moves, list_id, algorithm_lists!inner(name, is_system)")
-    .eq("moves_normalized", validation.normalized)
-    .order("algorithm_lists(is_system)", { ascending: false })
-    .order("created_at", { ascending: true });
+  // 2. Duplicate detection, in the probe shared with updateAlgorithm.ts —
+  // including the RLS scoping, the pre-built-wins rule, and the ordering clause
+  // that fails silently if mistyped. Nothing is excluded here: on add there is
+  // no row of our own to leave out.
+  const probe = await probeDuplicates(supabase, {
+    normalizedMoves: validation.normalized,
+    listId,
+  });
 
-  if (matchError) {
-    console.error("lists/addAlgorithm duplicate query failed", matchError);
+  if (probe.kind === "error") {
+    console.error("lists/addAlgorithm duplicate query failed", probe.error);
     return { status: 500, body: { error: "Failed to add algorithm" } };
   }
 
-  const rows = matches as MatchRow[];
-
-  // 3a. Already in THIS list — no copy, no second row.
-  const inThisList = rows.find((row) => row.list_id === listId);
-  if (inThisList) {
-    return { status: 409, body: { status: "already_in_list", match: toMatch(inThisList) } };
+  // 3a. Already in THIS list — no copy, no second row. Not overridable by
+  // createAnyway: one row is one list membership.
+  if (probe.kind === "in_this_list") {
+    return { status: 409, body: { status: "already_in_list", match: probe.match } };
   }
 
   // 3b. Visible elsewhere — offer it rather than silently duplicating.
-  //
-  // The pre-built preference is re-applied here rather than relying only on the
-  // query's ORDER BY. That is deliberate: it makes this choice testable without
-  // a database, and it keeps the "canonical entry wins" rule from depending on
-  // a query clause that fails silently when mistyped.
-  if (rows.length > 0 && createAnyway !== true) {
-    const preferred = rows.find((row) => row.algorithm_lists.is_system) ?? rows[0];
-    return { status: 200, body: { status: "duplicate", match: toMatch(preferred) } };
+  if (probe.kind === "elsewhere" && createAnyway !== true) {
+    return { status: 200, body: { status: "duplicate", match: probe.match } };
   }
 
   // 4. Insert. `moves` is stored RAW — display-verbatim, matching the seeded
@@ -161,8 +117,9 @@ export async function addAlgorithm(
     return { status: 500, body: { error: "Failed to add algorithm" } };
   }
 
-  // 1-based, not 0-based: AlgorithmRow.astro renders `position` verbatim as the
-  // learner-visible row number, and the seeded lists start at 1.
+  // 1-based, not 0-based, matching the seeded lists. `position` is an ORDERING
+  // KEY only — AlgorithmRow.astro takes a display index instead, so a gap left
+  // by a delete is never rendered and is never backfilled here either.
   const position = (last?.position ?? 0) + 1;
 
   const { data: inserted, error: insertError } = await supabase

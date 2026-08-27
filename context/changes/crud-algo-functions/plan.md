@@ -647,34 +647,34 @@ as a display value would be wrong; it is an ordering key only.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
-- [x] 1.3 Unit suite passes, including the two new delete-core test files: `npm test`
-- [x] 1.4 Integration suite passes, including the new isolation test: `npm run test:integration`
+- [x] 1.1 Lint passes: `npm run lint` — bcc24b1
+- [x] 1.2 Build passes: `npm run build` — bcc24b1
+- [x] 1.3 Unit suite passes, including the two new delete-core test files: `npm test` — bcc24b1
+- [x] 1.4 Integration suite passes, including the new isolation test: `npm run test:integration` — bcc24b1
 
 #### Manual
 
-- [x] 1.5 Owned list: delete control appears, confirm names the algorithm count, confirming returns to dashboard and the list is gone
-- [x] 1.6 Pre-built set: no delete control on the list page or any algorithm page within it
-- [x] 1.7 Deleting the second of four algorithms leaves rows numbered 1, 2, 3 with no hole
-- [x] 1.8 Cancelling the confirm leaves the list and its algorithms intact
-- [x] 1.9 Deleting an algorithm returns to its list page and the row is gone
+- [x] 1.5 Owned list: delete control appears, confirm names the algorithm count, confirming returns to dashboard and the list is gone — bcc24b1
+- [x] 1.6 Pre-built set: no delete control on the list page or any algorithm page within it — bcc24b1
+- [x] 1.7 Deleting the second of four algorithms leaves rows numbered 1, 2, 3 with no hole — bcc24b1
+- [x] 1.8 Cancelling the confirm leaves the list and its algorithms intact — bcc24b1
+- [x] 1.9 Deleting an algorithm returns to its list page and the row is gone — bcc24b1
 
 ### Phase 2: Update (rename list + edit algorithm)
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint`
-- [ ] 2.2 Build passes: `npm run build`
-- [ ] 2.3 Unit suite passes, including both new update-core test files: `npm test`
-- [ ] 2.4 Integration suite passes, with the isolation test extended to update: `npm run test:integration`
+- [x] 2.1 Lint passes: `npm run lint`
+- [x] 2.2 Build passes: `npm run build`
+- [x] 2.3 Unit suite passes, including both new update-core test files: `npm test`
+- [x] 2.4 Integration suite passes, with the isolation test extended to update: `npm run test:integration`
 
 #### Manual
 
-- [ ] 2.5 Renaming an owned list updates heading, tab title, and the dashboard card
-- [ ] 2.6 Name-only edit leaves the move sequence and the practice streak untouched
-- [ ] 2.7 Editing moves to a pre-built set's sequence shows the duplicate panel; "Save anyway" completes the edit
-- [ ] 2.8 Editing moves to a sequence already in the same list is refused with the already-in-list message
-- [ ] 2.9 After a moves change, practice uses the new sequence and the streak has restarted from zero
-- [ ] 2.10 An invalid move token is rejected before any request is sent, with the add form's message
-- [ ] 2.11 No rename or edit control appears anywhere within a pre-built set
+- [x] 2.5 Renaming an owned list updates heading, tab title, and the dashboard card
+- [x] 2.6 Name-only edit leaves the move sequence and the practice streak untouched
+- [x] 2.7 Editing moves to a pre-built set's sequence shows the duplicate panel; "Save anyway" completes the edit
+- [x] 2.8 Editing moves to a sequence already in the same list is refused with the already-in-list message
+- [x] 2.9 After a moves change, practice uses the new sequence and the streak has restarted from zero
+- [x] 2.10 An invalid move token is rejected before any request is sent, with the add form's message
+- [x] 2.11 No rename or edit control appears anywhere within a pre-built set

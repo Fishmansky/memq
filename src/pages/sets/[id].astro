@@ -3,6 +3,7 @@ import AppLayout from "@/layouts/AppLayout.astro";
 import AlgorithmRow from "@/components/app/AlgorithmRow.astro";
 import AddAlgorithmForm from "@/components/app/AddAlgorithmForm";
 import ConfirmDelete from "@/components/app/ConfirmDelete";
+import RenameListForm from "@/components/app/RenameListForm";
 import { createClient } from "@/lib/supabase";
 
 const { id } = Astro.params;
@@ -96,6 +97,13 @@ const deletePrompt =
   {
     canManageList && (
       <div class="mt-10 border-t border-white/10 pt-6">
+        <RenameListForm listId={list.id} currentName={list.name} client:load />
+      </div>
+    )
+  }
+  {
+    canManageList && (
+      <div class="mt-8">
         <ConfirmDelete
           endpoint={`/api/lists/${list.id}`}
           label="Delete list"
