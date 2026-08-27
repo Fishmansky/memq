@@ -1,10 +1,10 @@
 ---
 change_id: crud-algo-functions
 title: Complete CRUD on user algorithm lists
-status: implemented
+status: archived
 created: 2026-08-27
 updated: 2026-08-27
-archived_at: null
+archived_at: 2026-08-27T12:59:20Z
 ---
 
 ## Notes
