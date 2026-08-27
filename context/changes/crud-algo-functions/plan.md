@@ -664,17 +664,17 @@ as a display value would be wrong; it is an ordering key only.
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
-- [x] 2.3 Unit suite passes, including both new update-core test files: `npm test`
-- [x] 2.4 Integration suite passes, with the isolation test extended to update: `npm run test:integration`
+- [x] 2.1 Lint passes: `npm run lint` — 3a66a18
+- [x] 2.2 Build passes: `npm run build` — 3a66a18
+- [x] 2.3 Unit suite passes, including both new update-core test files: `npm test` — 3a66a18
+- [x] 2.4 Integration suite passes, with the isolation test extended to update: `npm run test:integration` — 3a66a18
 
 #### Manual
 
-- [x] 2.5 Renaming an owned list updates heading, tab title, and the dashboard card
-- [x] 2.6 Name-only edit leaves the move sequence and the practice streak untouched
-- [x] 2.7 Editing moves to a pre-built set's sequence shows the duplicate panel; "Save anyway" completes the edit
-- [x] 2.8 Editing moves to a sequence already in the same list is refused with the already-in-list message
-- [x] 2.9 After a moves change, practice uses the new sequence and the streak has restarted from zero
-- [x] 2.10 An invalid move token is rejected before any request is sent, with the add form's message
-- [x] 2.11 No rename or edit control appears anywhere within a pre-built set
+- [x] 2.5 Renaming an owned list updates heading, tab title, and the dashboard card — 3a66a18
+- [x] 2.6 Name-only edit leaves the move sequence and the practice streak untouched — 3a66a18
+- [x] 2.7 Editing moves to a pre-built set's sequence shows the duplicate panel; "Save anyway" completes the edit — 3a66a18
+- [x] 2.8 Editing moves to a sequence already in the same list is refused with the already-in-list message — 3a66a18
+- [x] 2.9 After a moves change, practice uses the new sequence and the streak has restarted from zero — 3a66a18
+- [x] 2.10 An invalid move token is rejected before any request is sent, with the add form's message — 3a66a18
+- [x] 2.11 No rename or edit control appears anywhere within a pre-built set — 3a66a18
